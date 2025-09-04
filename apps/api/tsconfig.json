@@ -1,14 +1,14 @@
 {
+  "extends": "../../packages/typescript-config/node.json",
   "compilerOptions": {
-    "target": "ES2022",
-    "module": "CommonJS",
+     "esModuleInterop": true,        
+    "allowSyntheticDefaultImports": true,  
     "outDir": "./dist",
     "rootDir": "./src",
-    "strict": true,
-    "esModuleInterop": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
