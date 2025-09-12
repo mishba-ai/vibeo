@@ -1,0 +1,179 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+// user model:a base for authentication
+//email from google 
+model User {
+  id       String   @id @default(uuid())
+  email    String   @unique
+  username String   @unique
+  joinDate DateTime @default(now())
+
+  // Optional profile fields you might want later
+  displayName String?
+  bio         String?
+  avatar      String?
+
+  // timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //Relations
+  posts    Post[]
+  comments Comment[]
+  likes    Like[]
+
+  followers Follow[] @relation("UserFollowers")
+  following Follow[] @relation("UserFollowing")
+
+  // Notifications
+  notifications          Notification[] @relation("NotificationRecipient")
+  triggeredNotifications Notification[] @relation("NotificationTriggerer")
+
+  // User statistics (denormalized for performance)
+  postsCount     Int @default(0)
+  followersCount Int @default(0)
+  followingCount Int @default(9)
+
+  @@map("users")
+}
+
+model Post {
+  id      String   @id @default(uuid())
+  content String
+  media   String[] // urls to media files
+
+  //post metadata
+  viewsCount    Int @default(0)
+  likesCount    Int @default(0)
+  commentsCount Int @default(0)
+
+  //timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  //relations
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  comments Comment[]
+  likes    Like[]
+
+  // Soft delete
+  deleted   Boolean   @default(false)
+  deletedAt DateTime?
+
+  @@index([authorId])
+  @@index([createdAt])
+  @@map("posts")
+}
+
+model Comment {
+  id      String @id @default(uuid())
+  content String
+
+  //nested comment support
+  parentId  String?
+  parent    Comment?  @relation("commentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies   Comment[] @relation("commentReplies")
+  //timestamps
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  //relations
+  author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  authorId String
+
+  Post   Post   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String
+
+  likes Like[]
+
+  //comment metadata
+  likesCount Int @default(0)
+
+  @@index([postId])
+  @@index([authorId])
+  @@map("comments")
+}
+
+model Like {
+  id String @id @default(uuid())
+
+  //user who liked
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  // What was liked (post or comment)
+  Post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String?
+
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+
+  createdAt DateTime @default(now())
+
+  // Ensure user can't like the same thing twice
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@map("likes")
+}
+
+// Follow model - User following relationships
+model Follow {
+  id String @id @default(uuid())
+
+  //user who follows
+  follower   User   @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followerId String
+
+  //user being followed
+  following   User   @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  followingId String
+
+  createdAt DateTime @default(now())
+
+  //prevent duplicate follows and self-following
+  @@unique([followerId, followingId])
+  @@map("follows")
+}
+
+model Notification {
+  id      String           @id @default(uuid())
+  type    NotificationType
+  message String
+  read    Boolean          @default(false)
+
+  //notification recipient
+  user   User   @relation("NotificationRecipient", fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  //who triggered the notificaton (optiona)
+  triggerdBy    User?   @relation("NotificationTriggerer", fields: [triggeredById], references: [id], onDelete: Cascade)
+  triggeredById String?
+
+  //related entities
+  postId    String?
+  commentId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([createdAt])
+  @@map("notifications")
+}
+
+enum NotificationType {
+  LIKE
+  COMMENT
+  FOLLOW
+  REPLY
+}
