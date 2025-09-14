@@ -1,6 +1,7 @@
 {
   "extends": "../../packages/typescript-config/node.json",
   "compilerOptions": {
+    "types": ["node"],
      "esModuleInterop": true,        
     "allowSyntheticDefaultImports": true,  
     "outDir": "./dist",
@@ -10,6 +11,6 @@
       "@/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "server.ts"],
   "exclude": ["node_modules", "dist"]
 }

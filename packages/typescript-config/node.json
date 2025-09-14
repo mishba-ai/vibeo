@@ -4,6 +4,7 @@
   "compilerOptions": {
     "lib": ["ES2022"],
     "module": "CommonJS",
+    "types": ["node"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
