@@ -1,7 +1,7 @@
 import Contentsidebar from "@/components/feed/Contentsidebar"
 import Fheaders from "@/components/feed/Fheaders"
 import Fsidebar from "@/components/feed/Fsidebar"
-import Timeline from "@/components/feed/timeline"
+import Timeline from "@/components/feed/Timeline"
 export default function Feed() {
     return (
         <>

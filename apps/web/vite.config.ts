@@ -12,4 +12,7 @@ export default defineConfig({
       '@repo/ui/': resolve(__dirname, '../../packages/ui/src/') 
     },
   },
+  watch: {
+      usePolling: true, // This is the key fix
+    },
 })

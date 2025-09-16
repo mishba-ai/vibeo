@@ -6,7 +6,7 @@ export default function CreatePostcard() {
   if (loading) {
     return <div>Loading...</div>; // Or a spinner
   }
-  const API_BASE_URL = process.env.EXPRESS_API_BASE_URL
+  const API_BASE_URL = import.meta.env.EXPRESS_API_BASE_URL
   return (
     <div className='w-full h-auto border-black rounded-2xl bg-violet-100 p-6'>
       <div className='flex w-full h-auto bg-gray-50 rounded-3xl gap-x-2 '>
