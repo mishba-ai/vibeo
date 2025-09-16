@@ -23,14 +23,18 @@ passport.use(new GoogleStrategy({
               email: profile.emails?.[0]?.value!,
               username: profile.displayName,
               googleId: profile.id,
-              avatar:profile.photos?.[0]?.value
+              avatar: profile.photos?.[0]?.value
             }
           })
         }
         return existingUser;
 
       })
-      const token = jwt.sign({ id: user.id }, jwtSecret!, {
+      const token = jwt.sign({
+        id: user.id,
+        username: user.username,
+        avatar: user.avatar
+      }, jwtSecret!, {
         expiresIn: "24h"
       })
       return cb(null, { user, token })

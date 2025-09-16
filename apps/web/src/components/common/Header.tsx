@@ -9,7 +9,11 @@ import {
     NavigationMenuViewport,
 } from "@repo/ui/components/ui/navigation-menu"
 import { Button } from "@repo/ui/components/ui/button"
+import { useAuth } from "@/hooks/useAuth"
+
 export default function Header() {
+    const { handleGoogleLogin } = useAuth();
+
     return (
         <>
             <div className="flex justify-between px-10 py-2">
@@ -24,10 +28,10 @@ export default function Header() {
                                 <NavigationMenuContent>
                                     <NavigationMenuLink>Discord</NavigationMenuLink>
                                 </NavigationMenuContent>
-                            </NavigationMenuItem>                          
+                            </NavigationMenuItem>
                         </NavigationMenuList>
                     </NavigationMenu>
-                    <Button>Join for Free</Button>
+                    <Button onClick={handleGoogleLogin}>Join for Free</Button>
 
                 </div>
             </div>
