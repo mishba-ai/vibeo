@@ -8,7 +8,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-
 // user model:a base for authentication
 //email from google 
 model User {

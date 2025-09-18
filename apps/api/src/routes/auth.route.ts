@@ -37,7 +37,7 @@ authRouter.post('/logout', (req, res) => {
 })
 
 authRouter.get('/feed', protect, (req, res) => {
-  console.log('User data from Passport:', req.user); // Check this!
+  console.log('User data from Passport:', req.user); 
 
   res.status(200).json({
     message: "User is authenticated",

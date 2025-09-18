@@ -13,6 +13,7 @@
     "@repo/ui": "workspace:*",
     "@tailwindcss/vite": "^4.1.12",
     "axios": "catalog:",
+    "date-fns": "^4.1.0",
     "lucide-react": "catalog:",
     "react": "catalog:react19",
     "react-dom": "catalog:react19",

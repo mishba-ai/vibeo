@@ -1,13 +1,13 @@
 import { createContext, useState, useEffect, type PropsWithChildren } from 'react'
 import api from '../api/axiosInstance'
-const API_BASE_URL = import.meta.env.EXPRESS_API_BASE_URL
+const API_BASE_URL = import.meta.env.VITE_EXPRESS_API_BASE_URL
+
 interface User {
-    id:string;
+    id: string;
     googleId: string;
     email: string;
     username: string;
     avatar: string;
-    
 }
 export interface AuthContextType {
     user: User | null;

@@ -17,7 +17,7 @@ app.use(cookieParser())
 app.use(passport.initialize()); // Initialize Passport
 
 //mount all api routes under /api/v1
-app.use("/api/v1/", apiRoutes);
+app.use("/api/v1", apiRoutes);
 app.use("/auth", authRouter);
 
 app.get('/', (req, res) => {

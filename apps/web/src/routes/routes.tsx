@@ -1,5 +1,7 @@
 import App from "@/App.tsx";
+import Layout from "@/pages/ Layout";
 import Feed from "@/pages/Feed"
+
 const routes = [
   {
     path: "/",
@@ -7,7 +9,7 @@ const routes = [
   },
   {
     path:"/feed",
-    element:<Feed/>
+    element:<Layout/>
   }
 ];
 
