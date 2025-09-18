@@ -37,22 +37,56 @@ const createPost = async (req: Request, res: Response) => {
     }
 }
 
-const getPosts = async (req:Request,res:Response) => {
-try {
-    const posts = await prisma.post.findMany({
-        orderBy:{
-            createdAt:'desc'
-        },
-        include:{
-            author:true,
-            likes:true,
-            comments:true,
+const getPosts = async (req: Request, res: Response) => {
+    try {
+        const posts = await prisma.post.findMany({
+            orderBy: {
+                createdAt: 'desc'
+            },
+            include: {
+                author: true,
+                likes: true,
+                comments: true,
+            }
+        })
+        res.status(200).json(posts)
+    } catch (error) {
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+// get only user profile with its user timeline/posts only not other posts like twitter profile  
+
+const getUserProfile = async (req: Request, res: Response) => {
+    try {
+        const { username } = req.params
+        const decodedUsername = decodeURIComponent(username!)
+        console.log('Searching for username:', decodedUsername)      
+      const user = await prisma.user.findUnique({
+            where: {
+                username: decodedUsername,
+            },
+            include: {
+                posts: {
+                    orderBy: {
+                        createdAt: 'desc'
+                    },
+                    include: {
+                        author: true,
+                        likes: true,
+                        comments: true
+                    }
+                }
+            }
+        })
+        if (!user) {
+            return res.status(404).json({ message: "user not found" })
         }
-    })
-    res.status(200).json(posts)
-} catch (error) {
-      console.error('Error fetching posts:', error);
-    res.status(500).json({ message: 'Server error' });
+        res.status(200).json(user);
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).json({ message: "Server error" });
+    }
 }
-}
-export { createPost,getPosts } 
+export { createPost, getPosts, getUserProfile } 

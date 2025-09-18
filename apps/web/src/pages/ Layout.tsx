@@ -1,4 +1,5 @@
 import { Outlet } from "react-router"
+import React from "react"
 import {Spaces,Fheaders,Fsidebar,Contentsidebar,Timeline} from "@/components/feed/index"
 
 export default function  Layout() {
@@ -11,7 +12,7 @@ export default function  Layout() {
                      <div className="flex w-full justify-between px-2 pt-4">
                      <div className="w-[60%] max-w-[70%] bg-red-">
                          <Fheaders />
-                        Outlet
+                        <Outlet/>
                          {/*  */}
                      </div>
                      <div className="w-[30%] bg-amber-">
