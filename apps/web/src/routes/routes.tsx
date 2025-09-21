@@ -1,7 +1,9 @@
 import App from "@/App.tsx";
 import Layout from "@/pages/ Layout";
 import Feed from "@/pages/Feed"
+import Messages from "@/pages/Messages";
 import NotFound from "@/pages/NotFound";
+import Notification from "@/pages/Notification";
 import Timeline from "@/pages/Timeline";
 
 
@@ -21,6 +23,14 @@ const routes = [
     {
       path:'/users/:username',
       element:<Timeline/>
+    },
+    {
+      path:"messages",
+      element:<Messages/>
+    },
+    {
+      path:"notification",
+      element:<Notification/>
     }
   
   ]

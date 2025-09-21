@@ -2,7 +2,9 @@
 export default function Spaces() {
   return (
     <div>
-        <h1 className="text-2xl font-bold">Spaces</h1>
+      <div className='w-44 h-64 rounded-xl bg-red-50'>
+      </div>
+
     </div>
   )
 }

@@ -1,11 +1,10 @@
-import React, { useEffect } from 'react'
+
 import { Eye, HeartIcon, MessageCircleIcon } from 'lucide-react'
-import { useState } from 'react'
+
 import { formatDistanceToNow } from 'date-fns';
 import { postColors } from '@/lib/constants'
 import { Link } from 'react-router'
 import type { Post } from '@/types';
-import { useAuth } from '@/hooks/useAuth';
 
 
 interface PostProps {
@@ -14,7 +13,6 @@ interface PostProps {
 
 export default function Posts({ post }: PostProps) {
 
-    const { user: User } = useAuth()
     //random color posts 
     const getRandomPostColor = () => {
         const randomIndex = Math.floor(Math.random() * postColors.length)

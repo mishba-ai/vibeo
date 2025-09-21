@@ -8,7 +8,7 @@ import type { Post } from '@/types'
 import CreatePostcard from './CreatePostcard'
 import { postColors } from '@/lib/constants'
 import { Link } from 'react-router'
-import Posts from './Posts'
+import Posts from '../common/Posts'
 
 
 

@@ -1,9 +1,9 @@
 import CreatePostcard from "./CreatePostcard";
-import Posts from "./Posts";
-import Spaces from "./Spaces";
+import Posts from "../common/Posts";
+import Spaces from "../spaces/Spaces";
 import Timeline from "./Feed";
-import Fsidebar from "./Fsidebar";
-import Fheaders from "./Fheaders";
-import Contentsidebar from "./Contentsidebar";
+import Fsidebar from "../common/Fsidebar";
+import Fheaders from "../common/Fheaders";
+import Contentsidebar from "../spaces/Contentsidebar";
 
 export {CreatePostcard,Posts,Spaces,Fheaders,Fsidebar,Timeline,Contentsidebar}

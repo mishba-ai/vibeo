@@ -1,6 +1,6 @@
 @import "tw-animate-css";
 @theme {
-  --spacing: 4px; /* Set your desired base spacing unit here */
+  --spacing: 4px; 
 }
 
 @custom-variant dark (&:is(.dark *));
