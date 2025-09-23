@@ -6,7 +6,6 @@ import {
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuBadge,
@@ -41,19 +40,31 @@ const items = [
 ]
 
 export default function Fsidebar() {
-  // Move hooks inside the component function
   const { user } = useAuth()
   const location = useLocation()
   const currentPath = location.pathname
-  console.log(currentPath)
 
-  if (!user) {
-    return (
-      <div className="w-84 bg-blue-300">
-        <SidebarProvider className="w-full bg-white">
-          <Sidebar className="bg-white">
-            <SidebarContent className="bg-white">
-              {/* User Avatar Loading State */}
+  return (
+    <div className="w-84 ">
+      <SidebarProvider className="w-full">
+        <Sidebar className="bg-white border-transparent">
+          <SidebarContent className="bg-white">
+            {/* User Profile Section */}
+            {user ? (
+              <div className="mt-8 flex flex-col items-center">
+                <div className="flex">
+                  <img src={image1} alt="" className="w-24 h-24 rounded-full border" />
+                  <img
+                    src={user.avatar || "https://img.freepik.com/premium-vector/cute-adorable-little-girl-character-avatar-isolated_925324-1724.jpg"}
+                    alt={user.username || "User Avatar"}
+                    className="w-24 h-24 rounded-full -ml-2 z-10 border-black"
+                  />
+                </div>
+                <h1 className="mt-2 font-semibold">{user.username}</h1>
+                <p className="text-sm text-gray-600">{user.email}</p>
+              </div>
+            ) : (
+              /* Loading State for User Profile */
               <div className="p-4 border-b">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
@@ -63,61 +74,42 @@ export default function Fsidebar() {
                   </div>
                 </div>
               </div>
+            )}
 
-              <SidebarGroup>
-                <SidebarGroupContent>
-                  <SidebarMenu>
-                    {items.map((item) => (
-                      <SidebarMenuItem key={item.title} className="flex flex-col mt-4 px-">
-                        <SidebarMenuButton asChild className={`${currentPath === item.url ? "font-semibold bg-black text-white h-12" : "font-semibold h-12"}`}>
-                          <a href={item.url}>
-                            <item.icon />
-                            <span>{item.title}</span>
-                          </a>
-                        </SidebarMenuButton>
-                        {item.badge && <SidebarMenuBadge className={`${currentPath === item.url ? "font-semibold  text-white " : "text-black"}`}>{item.badge}</SidebarMenuBadge>}
-                      </SidebarMenuItem>
-                    ))}
-                  </SidebarMenu>
-                </SidebarGroupContent>
-              </SidebarGroup>
-            </SidebarContent>
-          </Sidebar>
-        </SidebarProvider>
-      </div>
-    )
-  }
-
-  return (
-    <div className="flex">
-      <SidebarProvider className="">
-
-        <Sidebar className="border-0 ">
-          <SidebarContent className="bg-white border-none ring-none ">
-            <div className="mt-8 flex flex-col items-center ">
-              <div className="flex ">
-                <img src={image1} alt="" className="w-24 h-24 rounded-full border" />
-                <img
-                  src={user.avatar || "https://img.freepik.com/premium-vector/cute-adorable-little-girl-character-avatar-isolated_925324-1724.jpg"}
-                  alt={user.username || "User Avatar"}
-                  className="w-24 h-24 rounded-full -ml-2 z-10  border-black"
-                />
-              </div>
-              <h1>{user.username}</h1>
-              <p>{user.email}</p>
-            </div>
+            {/* Navigation Menu */}
             <SidebarGroup>
-              <SidebarGroupContent className="mt-8">
-                <SidebarMenu className="bg-red-20 flex flex-col items-center">
+              <SidebarGroupContent className={user ? "mt-8" : ""}>
+                <SidebarMenu className={`flex flex-col ${user ? "items-center" : "items-center"}`}>
                   {items.map((item) => (
-                    <SidebarMenuItem key={item.title} className="w-56">
-                      <SidebarMenuButton asChild className={`${currentPath === item.url ? "font-semibold bg-black text-white h-12 gap-y-2  rounded-2xl text-center" : "font-semibold bg-white text-black h-12 rounded-2xl text-center"}`}>
+                    <SidebarMenuItem 
+                      key={item.title} 
+                      className={`${user ? "w-56" : "flex flex-col mt-4 px-"} relative`}
+                    >
+                      <SidebarMenuButton 
+                        asChild 
+                        className={`${
+                          currentPath === item.url 
+                            ? `font-semibold bg-black text-white h-12 ${user ? "rounded-2xl" : ""} hover:bg-black hover:text-white` 
+                            : `font-semibold ${user ? "bg-white text-black rounded-2xl" : ""} h-12 hover:bg-black hover:text-white`
+                        } transition-colors duration-200 peer`}
+                      >
                         <a href={item.url}>
                           <item.icon />
                           <span>{item.title}</span>
                         </a>
                       </SidebarMenuButton>
-                      {item.badge && <SidebarMenuBadge className={`${currentPath === item.url ? "font-semibold  text- mt-2 mr-2 bg-white rounded-full" : " mt-2 mr-2 font-semibold bg-black rounded-full text-white"}`}>{item.badge}</SidebarMenuBadge>}
+                      
+                      {item.badge && (
+                        <SidebarMenuBadge 
+                          className={`${
+                            currentPath === item.url 
+                              ? `font-semibold text-black bg-white rounded-full ${user ? "mt-2 mr-2" : ""}` 
+                              : `font-semibold bg-black text-white rounded-full ${user ? "mt-2 mr-2" : ""} peer-hover:bg-white peer-hover:text-black `
+                          } transition-colors duration-200`}
+                        >
+                          {item.badge}
+                        </SidebarMenuBadge>
+                      )}
                     </SidebarMenuItem>
                   ))}
                 </SidebarMenu>

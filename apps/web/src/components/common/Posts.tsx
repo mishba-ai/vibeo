@@ -1,11 +1,8 @@
-
 import { Eye, HeartIcon, MessageCircleIcon } from 'lucide-react'
-
 import { formatDistanceToNow } from 'date-fns';
 import { postColors } from '@/lib/constants'
 import { Link } from 'react-router'
 import type { Post } from '@/types';
-
 
 interface PostProps {
     post: Post;
@@ -20,7 +17,6 @@ export default function Posts({ post }: PostProps) {
     }
     return (
         <div>
-
             <div
                 className=' w-full h-auto p-4 rounded-2xl gap-y-3'
                 key={post.id}
@@ -41,7 +37,7 @@ export default function Posts({ post }: PostProps) {
                 <div>
                     <p>{post.content}</p>
                 </div>
-                
+
                 {/* posts footer */}
                 <div className='w-full mt-4 p-'>
                     <ul className='flex space-x-8 text-gray-600 text-xs'>

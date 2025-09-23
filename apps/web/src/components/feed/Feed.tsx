@@ -1,13 +1,9 @@
-import React, { useEffect } from 'react'
-import { Eye, HeartIcon, MessageCircleIcon } from 'lucide-react'
+import { useEffect } from 'react'
 import api from '@/api/axiosInstance'
 import { useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
-import { formatDistanceToNow } from 'date-fns';
 import type { Post } from '@/types'
 import CreatePostcard from './CreatePostcard'
-import { postColors } from '@/lib/constants'
-import { Link } from 'react-router'
 import Posts from '../common/Posts'
 
 
@@ -43,10 +39,9 @@ export default function Feed() {
         return <div>Loading feeds</div>
     }
 
-    
 
     return (
-        <div className=' flex flex-col gap-y-8'>
+        <div className=' flex flex-col gap-y-8 mt-6'>
             <CreatePostcard onPostCreated={handlePostCreated} />
 
             {posts.length > 0 ? (
