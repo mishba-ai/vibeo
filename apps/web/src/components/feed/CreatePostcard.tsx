@@ -1,5 +1,4 @@
-// CreatePostcard.tsx
-import React, { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useAuth } from '@/hooks/useAuth'
 import { Button } from '@repo/ui/components/ui/button'
 import { Textarea } from '@repo/ui/components/ui/textarea'
@@ -7,6 +6,8 @@ import api from '@/api/axiosInstance'
 import type { Post } from '@/types/index'
 import { Link } from 'react-router'
 import { ImageUploader, ImagePreviewGrid } from './ImageUploader'
+import Emoji from './Emoji'
+
 
 interface UploadedImage {
     id: string;
@@ -33,31 +34,49 @@ export default function CreatePostcard({ onPostCreated }: CreatePostcardProps) {
 
     const API_BASE_URL = import.meta.env.VITE_EXPRESS_API_BASE_URL
 
-    
+    const textareaRef = useRef<HTMLTextAreaElement>(null)
+
     //   Handle images change from ImageUploader
-    
     const handleImagesChange = (updatedImages: UploadedImage[]) => {
         setImages(updatedImages)
         setError(null)
     }
 
-    
     //  Handle image upload error
-     
     const handleImageUploadError = (error: string) => {
         setError(`Image upload failed: ${error}`)
     }
 
-     
     //   Handle image removal from preview grid
-    
     const handleRemoveImage = (imageId: string) => {
         setImages(prev => prev.filter(img => img.id !== imageId))
     }
-
     
+    const handleEmojiSelect = (emoji: string) => {
+        const textarea = textareaRef.current
+        if (!textarea) {
+            // Fallback: append to end
+            setPostContent(prev => prev + emoji)
+            return
+        }
+
+        const start = textarea.selectionStart
+        const end = textarea.selectionEnd
+        const text = postContent
+
+        // Insert emoji at cursor position
+        const newText = text.substring(0, start) + emoji + text.substring(end)
+        setPostContent(newText)
+
+        // Set cursor position after emoji
+        setTimeout(() => {
+            const newCursorPos = start + emoji.length
+            textarea.setSelectionRange(newCursorPos, newCursorPos)
+            textarea.focus()
+        }, 0)
+    }
+
     //   Handle post submission
-     
     const handlePost = async () => {
         try {
             // Check if any images are still uploading
@@ -122,9 +141,10 @@ export default function CreatePostcard({ onPostCreated }: CreatePostcardProps) {
                     />
                 )}
                 <Textarea
+                    ref={textareaRef}
                     placeholder="What's on your mind?"
                     maxLength={400}
-                    className="resize-none focus-visible:ring-0 ring-0 border-0 outline-0 min-h-12 w-[90%] bg-gray-50"
+                    className="resize-none  focus-visible:ring-0 ring-0 border-0 outline-0 min-h-12 w-[90%] bg-gray-50"
                     value={postContent}
                     onChange={(e) => setPostContent(e.target.value)}
                     disabled={isPosting}
@@ -132,7 +152,7 @@ export default function CreatePostcard({ onPostCreated }: CreatePostcardProps) {
             </div>
 
             {/* Image Preview Grid */}
-            <ImagePreviewGrid 
+            <ImagePreviewGrid
                 images={images}
                 onRemove={handleRemoveImage}
             />
@@ -146,13 +166,15 @@ export default function CreatePostcard({ onPostCreated }: CreatePostcardProps) {
 
             {/* Footer Actions  */}
             <div className='flex w-full justify-between mt-4 items-center'>
-                <ImageUploader
-                    onImagesChange={handleImagesChange}
-                    onUploadError={handleImageUploadError}
-                    disabled={isPosting}
-                    maxImages={4}
-                />
-
+                <div className='flex gap-2'>
+                    <ImageUploader
+                        onImagesChange={handleImagesChange}
+                        onUploadError={handleImageUploadError}
+                        disabled={isPosting}
+                        maxImages={4}
+                    />
+                    <Emoji onEmojiSelect={handleEmojiSelect} />
+                </div>
                 {/* Post Button */}
                 <Button
                     onClick={handlePost}

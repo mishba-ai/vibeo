@@ -166,17 +166,17 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             <button
                 onClick={handleButtonClick}
                 disabled={disabled || !canAddMore || hasUploadingImages}
-                className="flex items-center gap-2 p-2 text-sm text-gray-600 hover:text-violet-600 transition-colors disabled:opacity-50 border border-dashed border-gray-300 rounded-lg hover:border-violet-400 min-w-[120px] justify-center"
+                className="flex items-center p-2 text-sm hover:bg-purple-200  transition-colors disabled:opacity-50 rounded-lg  justify-center"
                 type="button"
             >
                 {hasUploadingImages ? (
                     <Loader2 size={18} className="animate-spin" />
                 ) : (
-                    <ImageIcon size={18} />
+                    <ImageIcon  color='purple'/>
                 )}
-                <span className="font-medium">
+                {/* <span className="font-medium">
                     {hasUploadingImages ? 'Uploading...' : canAddMore ? 'Add Image' : `Max ${maxImages}`}
-                </span>
+                </span> */}
             </button>
 
             {/* Error Message */}
