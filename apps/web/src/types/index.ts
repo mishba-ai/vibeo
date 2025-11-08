@@ -8,9 +8,18 @@ export interface User {
 export interface Post {
   id: string;
   content: string;
-  createdAt: string;
-  author: User;
+  media: string[]; 
   viewsCount: number;
   likesCount: number;
   commentsCount: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  authorId: string;
+  author: {
+    id: string;
+    username: string;
+    avatar: string | null;
+  };
+  deleted: boolean;
+  deletedAt: Date | string | null;
 }

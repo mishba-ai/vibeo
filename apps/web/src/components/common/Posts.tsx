@@ -37,7 +37,19 @@ export default function Posts({ post }: PostProps) {
                 <div>
                     <p>{post.content}</p>
                 </div>
-
+                {/* Display images if they exist */}
+                {post.media && post.media.length > 0 && (
+                    <div className="post-images flex flex-wrap ">
+                        {post.media.map((imageUrl, index) => (
+                            <img
+                                key={index}
+                                src={imageUrl}
+                                alt={`Post image ${index + 1}`}
+                                className="post-image w-40 "
+                            />
+                        ))}
+                    </div>
+                )}
                 {/* posts footer */}
                 <div className='w-full mt-4 p-'>
                     <ul className='flex space-x-8 text-gray-600 text-xs'>

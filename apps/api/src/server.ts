@@ -4,7 +4,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import { prisma, passport } from './config/index'
 const PORT = process.env.PORT || '0.0.0.0'
-import { router, authRouter } from './routes/index'
+import { router, authRouter, uploadRouter } from './routes/index'
 const apiRoutes = router
 
 //middleware
@@ -13,6 +13,8 @@ app.use(cors({
   credentials: true,
 }));
 app.use(express.json())
+app.use(express.urlencoded({ extended: true }));
+
 app.use(cookieParser())
 app.use(passport.initialize()); // Initialize Passport
 
@@ -43,21 +45,21 @@ const startServer = async () => {
         process.exit(0)
       })
     };
-    // This signal is typically sent by process managers (e.g., pm2, Docker)
+    
     process.on('SIGTERM', shutdown)
-    // This signal is sent when press Ctrl+C in the terminal
+    
     process.on("SIGINT", shutdown)
 
     // Handle uncaught exceptions
     process.on("uncaughtException", async (error) => {
       console.error("Uncaught Exception:", error);
-      await prisma.$disconnect(); // Ensure Prisma disconnects on critical errors
+      await prisma.$disconnect(); 
       process.exit(1);
     });
 
     process.on("unhandledRejection", async (reason, promise) => {
       console.error("Unhandled Rejection at:", promise, "reason:", reason);
-      await prisma.$disconnect(); // Ensure Prisma disconnects on critical errors
+      await prisma.$disconnect(); 
       process.exit(1);
     });
   } catch (error) {

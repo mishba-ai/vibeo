@@ -50,7 +50,7 @@ export default function UserProfileComponent() {
 
   return (
     <div className=''>
-      {/* Profile Header, rendered once */}
+      {/* Profile Header */}
       <div className='flex items-center gap-x-8 p-4 border-b'>
         <ArrowLeftIcon className='cursor-pointer' />
         <div className='flex flex-col'>
@@ -67,7 +67,7 @@ export default function UserProfileComponent() {
           profile.posts.map((post) => (
             <div key={post.id} className='gap-y-4 flex flex-col p-4'>
               <Posts post={post} />
-              {/* Add more post details like likes, comments, etc. */}
+            
             </div>
           ))
         ) : (

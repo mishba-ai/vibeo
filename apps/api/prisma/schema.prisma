@@ -19,7 +19,7 @@ model User {
   // Optional profile fields you might want later
   displayName String?
   bio         String?
-  avatar      String?
+  avatar      String? //profile picture url 
 
   googleId String?       @unique
 

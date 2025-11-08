@@ -23,7 +23,7 @@ export default function Suggestion() {
         <div className="bg-gray0 rounded-2xl transition-transform scale-90 max-w-sm">
             <h2 className="text-xl font-bold text-gray-900 mb-4">Suggestions</h2>
             
-            <div className="space-y-4 bg-red-200  px-4">
+            <div className="space-y-4 bg-red0  px-4">
                 {suggestionList.map((user, index) => (
                     <div key={index} className="flex items-center justify-between">
                         {/* User Info */}

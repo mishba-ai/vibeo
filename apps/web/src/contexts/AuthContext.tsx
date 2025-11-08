@@ -1,5 +1,6 @@
-import { createContext, useState, useEffect, type PropsWithChildren } from 'react'
+import { createContext, useState, useEffect, type PropsWithChildren, useMemo } from 'react'
 import api from '../api/axiosInstance'
+import { User } from 'lucide-react';
 const API_BASE_URL = import.meta.env.VITE_EXPRESS_API_BASE_URL
 
 interface User {
@@ -50,9 +51,9 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
         }
     }
 
-    const value = {
+    const value = useMemo(() => ({
         user, handleGoogleLogin, logout, loading
-    }
+    }), [user, loading])
 
     return (
         <AuthContext.Provider value={value} >

@@ -46,7 +46,7 @@ export default function Fsidebar() {
 
   return (
     <div className="w-84 ">
-      <SidebarProvider className="w-full">
+      <SidebarProvider className="w-full ">
         <Sidebar className="bg-white border-transparent">
           <SidebarContent className="bg-white">
             {/* User Profile Section */}
