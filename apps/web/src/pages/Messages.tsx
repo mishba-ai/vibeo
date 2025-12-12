@@ -2,6 +2,6 @@ import React from 'react'
 
 export default function Messages() {
   return (
-    <div>Messages</div>
+    <div className='bg-red-50  h-full'>Messages</div>
   )
 }

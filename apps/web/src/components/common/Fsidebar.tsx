@@ -28,7 +28,7 @@ const items = [
   },
   {
     title: "Notification",
-    url: "/notification",
+    url: "/notifications",
     icon: BellDotIcon,
     badge: 23
   },

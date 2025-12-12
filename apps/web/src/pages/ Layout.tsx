@@ -1,22 +1,28 @@
-import { Outlet } from "react-router"
-import { Fheaders, Fsidebar, Contentsidebar } from "@/components/feed/index"
+import { Outlet, useLocation } from "react-router"
+import { Fsidebar, Contentsidebar } from "@/components/feed/index"
 
 export default function Layout() {
+  const location = useLocation()
+  // Pages that should show the content sidebar
+  const showContentSidebar = ['/feed', '/notifications', '/users/'].some(path =>
+    location.pathname.startsWith(path)
+  )
+
   return (
     <div>
       <div className="flex w-full space-x-  justify-between">
-        <div className="max-w-">
+        <div className="">
           <Fsidebar />
         </div>
-        <div className="flex w-full justify-around px-2 py- bg-blue- ">
-          <div className="w-[60%] max-w-[70%] bg-red-  ">
-            
+        <div className={`flex w-full  ${showContentSidebar ? 'justify-around' : 'gap-x-10'} px-2`}>
+          <div className={showContentSidebar ? "w-[60%] max-w-[70%]" : "w-full max-w- m-0"}>
             <Outlet />
-            {/*  */}
           </div>
-          <div className="w-[30%] py-0 bg-amber00 ">
-            <Contentsidebar />
-          </div>
+          {showContentSidebar && (
+            <div className="w-[30%]">
+              <Contentsidebar />
+            </div>
+          )}
         </div>
       </div>
     </div>
