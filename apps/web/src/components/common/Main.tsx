@@ -10,7 +10,7 @@ export default function Main() {
     return (
         <>
             <div className="">
-                <div className="flex justify-between items-center w-full bg-red-100">
+                <div className="flex justify-between items-center w-full">
                     <h1 className="text-xl font-bold ">Vibeo</h1>
                     <ul className=" flex space-x-4 text-gray-400">
                         {tabs.map((tab) => (

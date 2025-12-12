@@ -12,7 +12,7 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@repo/ui/components/ui/sidebar"
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from '@/hooks/useAuth' 
 
 const items = [
   {

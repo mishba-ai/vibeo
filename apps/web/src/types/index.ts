@@ -2,7 +2,11 @@
 export interface User {
   id: string;
   username: string;
-  avatar?: string | null;
+  avatar?: string | undefined;
+  followersCount:number;
+  followingCount:number;
+  posts: Post[];
+
 }
 
 export interface Post {
@@ -23,3 +27,4 @@ export interface Post {
   deleted: boolean;
   deletedAt: Date | string | null;
 }
+
