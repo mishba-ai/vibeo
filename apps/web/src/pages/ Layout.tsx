@@ -10,7 +10,7 @@ export default function Layout() {
         </div>
         <div className="flex w-full justify-around px-2 py- bg-blue- ">
           <div className="w-[60%] max-w-[70%] bg-red-  ">
-            <Fheaders />
+            
             <Outlet />
             {/*  */}
           </div>

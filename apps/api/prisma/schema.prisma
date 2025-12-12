@@ -77,6 +77,8 @@ model Post {
   @@map("posts")
 }
 
+
+
 model Comment {
   id      String @id @default(uuid())
   content String

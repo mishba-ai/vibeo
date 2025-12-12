@@ -1,7 +1,7 @@
 import { useState } from "react"
+import ForyouFeed from "../feed/ForyouFeed"
 
-
-export default function Fheaders() {
+export default function Main() {
     const [activeTab, setActiveTab] = useState('foryou')
     const tabs = [
         { id: 'foryou', label: 'for you ' },
@@ -9,9 +9,9 @@ export default function Fheaders() {
     ]
     return (
         <>
-            <div className="  ">
-                <div className="flex justify-between items-center w-full">
-                    <h1 className="text-xl font-bold ">Feeds</h1>
+            <div className="">
+                <div className="flex justify-between items-center w-full bg-red-100">
+                    <h1 className="text-xl font-bold ">Vibeo</h1>
                     <ul className=" flex space-x-4 text-gray-400">
                         {tabs.map((tab) => (
                             <button
@@ -29,15 +29,15 @@ export default function Fheaders() {
                             </button>
                         ))}
                     </ul>
+
                 </div>
+               
                 {/* Tab Content */}
                 <div className="mt-6">
                     {activeTab === "foryou" && (
                         <div>
                             {/* For You content */}
-                            <div className="text-gray-400 text-center py-8">
-                                For You feed content goes here
-                            </div>
+                            <ForyouFeed/>
                         </div>
                     )}
                     {activeTab === "following" && (
@@ -49,9 +49,7 @@ export default function Fheaders() {
                         </div>
                     )}
                 </div>
-
             </div>
-
         </>
     )
 }

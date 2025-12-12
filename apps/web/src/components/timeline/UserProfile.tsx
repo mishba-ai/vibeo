@@ -35,9 +35,7 @@ export default function UserProfileComponent() {
   }
 
   useEffect(() => {
-
     fetchUserProfile()
-
   }, [username])
 
   if (loadingProfile) {

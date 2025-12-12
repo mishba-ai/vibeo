@@ -6,9 +6,7 @@ import type { Post } from '@/types'
 import CreatePostcard from './CreatePostcard'
 import Posts from '../common/Posts'
 
-
-
-export default function Feed() {
+export default function ForyouFeed() {
 
     const [posts, setPosts] = useState<Post[]>([])
     const [loadingPosts, setLoadingPosts] = useState(true)
@@ -52,7 +50,6 @@ export default function Feed() {
                 <p> no posts to display</p>
             )
             }
-
         </div>
     )
 }
