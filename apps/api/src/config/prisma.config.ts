@@ -3,4 +3,5 @@ const prisma = new PrismaClient();
 
 // console.log(prisma);
 
+
 export {prisma};

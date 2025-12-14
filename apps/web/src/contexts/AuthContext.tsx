@@ -9,6 +9,8 @@ interface User {
     email: string;
     username: string;
     avatar: string;
+    followersCount:number;
+    followingCount:number;
 }
 export interface AuthContextType {
     user: User | null;

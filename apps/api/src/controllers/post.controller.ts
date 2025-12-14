@@ -1,6 +1,5 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
-import multer from 'multer'
 
 const createPost = async (req: Request, res: Response) => {
     try {
@@ -22,7 +21,7 @@ const createPost = async (req: Request, res: Response) => {
         const newPost = await prisma.post.create({
             data: {
                 content: content || '',
-                media: media  || [],
+                media: media || [],
                 authorId: authorId
             },
             include: {
@@ -41,16 +40,19 @@ const createPost = async (req: Request, res: Response) => {
     }
 }
 
+//feed
 const getPosts = async (req: Request, res: Response) => {
     try {
         const posts = await prisma.post.findMany({
             orderBy: {
                 createdAt: 'desc'
             },
+
             include: {
                 author: true,
                 likes: true,
                 comments: true,
+
             }
         })
         res.status(200).json(posts)
@@ -60,7 +62,7 @@ const getPosts = async (req: Request, res: Response) => {
     }
 }
 
-// Get only user profile with its user timeline/posts only not other posts 
+// Get only user profile with its user for timeline 
 const getUserProfile = async (req: Request, res: Response) => {
     try {
         const { username } = req.params
@@ -71,7 +73,14 @@ const getUserProfile = async (req: Request, res: Response) => {
             where: {
                 username: decodedUsername,
             },
-            include: {
+            select: {
+                id: true,
+                username: true,
+                followersCount: true,
+                followingCount: true,
+                avatar: true,
+                joinDate: true,
+                postsCount: true,
                 posts: {
                     orderBy: {
                         createdAt: 'desc'
@@ -82,7 +91,11 @@ const getUserProfile = async (req: Request, res: Response) => {
                         comments: true
                     }
                 }
-            }
+
+            },
+            // include: {
+
+            // }
         })
 
         if (!user) {
@@ -95,5 +108,6 @@ const getUserProfile = async (req: Request, res: Response) => {
         res.status(500).json({ message: "Server error" })
     }
 }
+
 
 export { createPost, getPosts, getUserProfile }

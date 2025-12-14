@@ -12,6 +12,7 @@ export default function UserProfileComponent() {
   const [profile, setProfile] = useState<User | null>(null)
   const [loadingProfile, setLoadingProfile] = useState(true)
   const { user } = useAuth()
+  const [follow, setFollow] = useState(false)
 
   const fetchUserProfile = async () => {
     if (!username) {
@@ -42,11 +43,33 @@ export default function UserProfileComponent() {
     return <div>User profile not found.</div>;
   }
 
+  function toggleFollow() {
+    setFollow(!follow)
+    // increase/decrease count on toggling and add in the database 
+    if (!follow) {
+      // User is following
+      if (user && user.followingCount !== undefined) {
+        user.followingCount += 1
+      }
+      if (profile && profile.followersCount !== undefined) {
+        profile.followersCount += 1
+      }
+    } else {
+      // User is unfollowing
+      if (user && user.followingCount !== undefined) {
+        user.followingCount -= 1
+      }
+      if (profile && profile.followersCount !== undefined) {
+        profile.followersCount -= 1
+      }
+    }
+  }
+
   return (
     <div className=''>
       {/* Profile Header */}
       <div className='flex flex-col justify-center gap-x-8 p-4 border-b  w-full'>
-       <Link to={'/feed'}><ArrowLeftIcon className='cursor-pointer' /></Link> 
+        <Link to={'/feed'}><ArrowLeftIcon className='cursor-pointer' /></Link>
         <div className='flex flex-col w-full px-10'>
           <div className=' flex gap-x-24 ' >
             <div>
@@ -72,12 +95,12 @@ export default function UserProfileComponent() {
                 :
                 (<div className='flex items-center justify-center gap-x-6 mt-2'>
                   <div>
-                    <button className='w-36 px-3 py-1 text-center text-purple-400 font-bold cursor-pointer bg-gray-100 rounded-3xl'>
-                      Follow
+                    <button onClick={toggleFollow} className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl'>
+                      {`${follow ? 'Followed' : 'Follow'} `}
                     </button>
                   </div>
                   <div>
-                    <button className='w-36 px-3 py-1 text-center text-purple-400 font-bold cursor-pointer bg-gray-100 rounded-3xl'>
+                    <button className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl'>
                       Message
                     </button>
                   </div>
