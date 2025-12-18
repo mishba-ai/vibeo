@@ -1,6 +1,8 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
 
+
+
 const createPost = async (req: Request, res: Response) => {
     try {
         // Capture the content AND mediaUrl from the request body
@@ -65,9 +67,12 @@ const getPosts = async (req: Request, res: Response) => {
 // Get only user profile with its user for timeline 
 const getUserProfile = async (req: Request, res: Response) => {
     try {
+        const authenticatedUserId = req.user?.id
+
         const { username } = req.params
         const decodedUsername = decodeURIComponent(username!)
         console.log('Searching for username:', decodedUsername)
+
 
         const user = await prisma.user.findUnique({
             where: {
@@ -80,7 +85,9 @@ const getUserProfile = async (req: Request, res: Response) => {
                 followingCount: true,
                 avatar: true,
                 joinDate: true,
+
                 postsCount: true,
+
                 posts: {
                     orderBy: {
                         createdAt: 'desc'
@@ -89,25 +96,97 @@ const getUserProfile = async (req: Request, res: Response) => {
                         author: true,
                         likes: true,
                         comments: true
+
                     }
                 }
 
             },
-            // include: {
-
-            // }
         })
+
 
         if (!user) {
             return res.status(404).json({ message: "User not found" })
         }
 
-        res.status(200).json(user)
+        //Check if authenticated user is following this profile
+        let isFollowing = false
+        if (authenticatedUserId && authenticatedUserId !== user.id) {
+            const followRelation = await prisma.follow.findUnique({
+                where: {
+                    followerId_followingId: {
+                        followerId: authenticatedUserId,
+                        followingId: user.id
+                    }
+                }
+            })
+            isFollowing = !!followRelation
+        }
+        res.status(200).json({
+            ...user,
+            isFollowing
+        })
     } catch (error) {
         console.error('Error fetching user profile:', error)
         res.status(500).json({ message: "Server error" })
     }
 }
 
+const getFollowingFeeds = async (req: Request, res: Response) => {
+    try {
+        const authenticatedUserId = req.user?.id;
+        if (!authenticatedUserId) {
+            return res.status(401).json("authenticated user not found")
+        }
 
-export { createPost, getPosts, getUserProfile }
+        const followingFeed = await prisma.post.findMany(
+            {
+                where: {
+                    author: {
+                        followers: {
+                            some: { //At least one match
+                                followerId: authenticatedUserId
+                            }
+                        }
+                    }
+                },
+                orderBy: {
+                    createdAt: 'desc'
+                },
+                include: {
+                    author: {
+                        select: {
+                            id: true,
+                            username: true,
+                            avatar: true,
+                            displayName: true,
+
+                        }
+
+                    },
+                    likes: true,
+                    comments: {
+                        include: {
+                            author: {
+                                select: {
+                                    id: true,
+                                    username: true,
+                                    displayName: true,
+                                    avatar: true
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+        )
+        res.status(200).json(followingFeed)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("server error")
+    }
+
+}
+
+
+export { createPost, getPosts, getUserProfile, getFollowingFeeds }

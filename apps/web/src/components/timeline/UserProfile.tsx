@@ -13,6 +13,7 @@ export default function UserProfileComponent() {
   const [loadingProfile, setLoadingProfile] = useState(true)
   const { user } = useAuth()
   const [follow, setFollow] = useState(false)
+  const [loadingFollow, setLoadingFollow] = useState(false)
 
   const fetchUserProfile = async () => {
     if (!username) {
@@ -35,6 +36,23 @@ export default function UserProfileComponent() {
     fetchUserProfile()
   }, [username])
 
+  // Fetch follow status when profile loads
+  useEffect(() => {
+    const checkFollowStatus = async () => {
+      if (!username || !user || profile?.username === user.username) return;
+
+      try {
+        const response = await api.get(`/api/v1/${username}/follow/status`)
+        setFollow(response.data.isFollowing)
+      } catch (error) {
+        console.error('Failed to check follow status:', error)
+      }
+    }
+    if (profile) {
+      checkFollowStatus()
+    }
+  }, [username, profile, user])
+
   if (loadingProfile) {
     return <div>Loading profile...</div>;
   }
@@ -43,25 +61,33 @@ export default function UserProfileComponent() {
     return <div>User profile not found.</div>;
   }
 
-  function toggleFollow() {
+  //toggle follow
+  const toggleFollow = async () => {
+    if (loadingFollow) return;
+
+    setLoadingFollow(true)
+    const previousFollow = follow
+
+    // Optimistic update
     setFollow(!follow)
-    // increase/decrease count on toggling and add in the database 
-    if (!follow) {
-      // User is following
-      if (user && user.followingCount !== undefined) {
-        user.followingCount += 1
+
+    try {
+      if (!follow) {
+        // Follow
+        await api.post(`/api/v1/${username}/follow`)
+        // Optionally refetch profile to get updated counts
+        fetchUserProfile()
+      } else {
+        // Unfollow
+        await api.delete(`/api/v1/${username}/follow`)
+        fetchUserProfile()
       }
-      if (profile && profile.followersCount !== undefined) {
-        profile.followersCount += 1
-      }
-    } else {
-      // User is unfollowing
-      if (user && user.followingCount !== undefined) {
-        user.followingCount -= 1
-      }
-      if (profile && profile.followersCount !== undefined) {
-        profile.followersCount -= 1
-      }
+    } catch (error) {
+      console.error('Failed to toggle follow:', error)
+      // Revert on error
+      setFollow(previousFollow)
+    } finally {
+      setLoadingFollow(false)
     }
   }
 
@@ -88,7 +114,8 @@ export default function UserProfileComponent() {
                   <p className='text-md font-bold text-gray-400'>Following</p>
                 </div>
               </div>
-              {/* actions  */}
+              {/* actions authenticated user */}
+
               {(profile.username == user?.username)
                 ?
                 (<div><button className='w-full px-2 py-2 cursor-pointer text-purple-400 font-bold text-xl bg-gray-100 mt-4 rounded-3xl'>Edit Profile</button></div>)

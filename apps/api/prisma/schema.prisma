@@ -16,7 +16,7 @@ model User {
   username String   @unique
   joinDate DateTime @default(now())
 
-  // Optional profile fields you might want later
+  // Optional profile fields 
   displayName String?
   bio         String?
   avatar      String? //profile picture url 

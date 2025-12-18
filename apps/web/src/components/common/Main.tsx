@@ -1,5 +1,6 @@
 import { useState } from "react"
 import ForyouFeed from "../feed/ForyouFeed"
+import FollowingFeed from "../feed/FollowingFeed"
 
 export default function Main() {
     const [activeTab, setActiveTab] = useState('foryou')
@@ -43,9 +44,7 @@ export default function Main() {
                     {activeTab === "following" && (
                         <div>
                             {/* Following content */}
-                            <div className="text-gray-400 text-center py-8">
-                                Following feed content goes here
-                            </div>
+                           <FollowingFeed/>
                         </div>
                     )}
                 </div>
