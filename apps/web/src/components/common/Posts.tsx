@@ -3,24 +3,40 @@ import { formatDistanceToNow } from 'date-fns';
 import { postColors } from '@/lib/constants'
 import { Link } from 'react-router'
 import type { Post } from '@/types';
-
+import { useAuth } from '@/hooks/useAuth';
+import { usePostLikes } from '@/hooks/usePostLikes';
+import { useMemo } from 'react';
 interface PostProps {
     post: Post;
 }
 
 export default function Posts({ post }: PostProps) {
-
     //random color posts 
-    const getRandomPostColor = () => {
-        const randomIndex = Math.floor(Math.random() * postColors.length)
-        return postColors[randomIndex]
-    }
+    // Memoize the color based on post.id so it stays consistent
+
+    const getRandomPostColor = useMemo(() => {
+        const hash = post.id.split('').reduce((acc, char) => {
+            return char.charCodeAt(0) + ((acc << 5) - acc);
+        }, 0);
+        const index = Math.abs(hash) % postColors.length;
+        return postColors[index];
+    }, [post.id]) // Only recalculate if post.id changes
+
+    const { user } = useAuth()
+    const {
+        likesCount,
+        isLikedByCurrentUser,
+        toggleLike,
+        isLoading
+    } = usePostLikes(post.id, user?.id)
+
+
     return (
         <div>
             <div
                 className=' w-full h-auto p-4 rounded-2xl gap-y-3'
                 key={post.id}
-                style={{ backgroundColor: getRandomPostColor() }} >
+                style={{ backgroundColor: getRandomPostColor }} >
                 {/* posts header */}
                 <div className='flex justify-between'>
                     <div className='flex space-x-2 text- gap-y-'>
@@ -50,7 +66,7 @@ export default function Posts({ post }: PostProps) {
                         ))}
                     </div>
                 )}
-                {/* posts footer */}
+                {/* posts footer action*/}
                 <div className='w-full mt-4 p-'>
                     <ul className='flex space-x-8 text-gray-600 text-xs'>
                         {/* views */}
@@ -60,8 +76,8 @@ export default function Posts({ post }: PostProps) {
                         </li>
                         {/* likes */}
                         <li className='flex gap-x-2'>
-                            <HeartIcon size={18} />
-                            <p>{post.likesCount}</p>
+                            <button onClick={toggleLike} disabled={isLoading || !user}> <HeartIcon size={18} className={`${isLikedByCurrentUser ? 'fill-current text-red-400' : ''}`} /></button>
+                            <p>{likesCount > 0 ? likesCount : '0'}</p>
                         </li>
                         {/* comment */}
                         <li className='flex gap-x-2'>

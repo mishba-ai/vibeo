@@ -1,8 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
 
-
-
 const createPost = async (req: Request, res: Response) => {
     try {
         // Capture the content AND mediaUrl from the request body
@@ -187,6 +185,12 @@ const getFollowingFeeds = async (req: Request, res: Response) => {
     }
 
 }
+
+const postViews = async () => {
+
+}
+
+// only render once 
 
 
 export { createPost, getPosts, getUserProfile, getFollowingFeeds }

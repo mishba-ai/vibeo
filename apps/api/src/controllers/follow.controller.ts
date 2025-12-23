@@ -81,7 +81,7 @@ export const followUser = async (req: Request, res: Response) => {
         }
         // Create the follow relationship and update counts in a transaction
         const result = await prisma.$transaction(async (tx) => {
-
+ 
             //create follow record
             const follow = await tx.follow.create({
                 data: {

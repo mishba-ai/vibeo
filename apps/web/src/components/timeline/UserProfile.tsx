@@ -24,6 +24,10 @@ export default function UserProfileComponent() {
     try {
       const response = await api.get(`/api/v1/users/${username}`)
       setProfile(response.data)
+
+      if (user) {
+        await checkFollowStatus()
+      }
     } catch (error) {
       console.error('Failed to fetch user profile:', error)
       setProfile(null);
@@ -32,26 +36,39 @@ export default function UserProfileComponent() {
     }
   }
 
+   const checkFollowStatus = async () => {
+    if (!username || !user) return;
+    
+    try {
+      // You'll need to create this endpoint or check from the profile data
+       const response = await api.get(`/api/v1/${username}/follow/status`)
+      setFollow(response.data.isFollowing)
+    } catch (error) {
+      console.error('Failed to check follow status:', error)
+      setFollow(false)
+    }
+  }
+
   useEffect(() => {
     fetchUserProfile()
   }, [username])
 
   // Fetch follow status when profile loads
-  useEffect(() => {
-    const checkFollowStatus = async () => {
-      if (!username || !user || profile?.username === user.username) return;
+  // useEffect(() => {
+  //   const checkFollowStatus = async () => {
+  //     if (!username || !user || profile?.username === user.username) return;
 
-      try {
-        const response = await api.get(`/api/v1/${username}/follow/status`)
-        setFollow(response.data.isFollowing)
-      } catch (error) {
-        console.error('Failed to check follow status:', error)
-      }
-    }
-    if (profile) {
-      checkFollowStatus()
-    }
-  }, [username, profile, user])
+  //     try {
+  //       const response = await api.get(`/api/v1/${username}/follow/status`)
+  //       setFollow(response.data.isFollowing)
+  //     } catch (error) {
+  //       console.error('Failed to check follow status:', error)
+  //     }
+  //   }
+  //   if (profile) {
+  //     checkFollowStatus()
+  //   }
+  // }, [username, profile, user])
 
   if (loadingProfile) {
     return <div>Loading profile...</div>;
