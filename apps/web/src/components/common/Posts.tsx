@@ -4,7 +4,7 @@ import { postColors } from '@/lib/constants'
 import { Link } from 'react-router'
 import type { Post } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
-import { usePostLikes } from '@/hooks/usePostLikes';
+import { usePostRealtime } from '@/hooks/usePostRealtime';
 import { useMemo } from 'react';
 interface PostProps {
     post: Post;
@@ -12,7 +12,6 @@ interface PostProps {
 
 export default function Posts({ post }: PostProps) {
     //random color posts 
-    // Memoize the color based on post.id so it stays consistent
 
     const getRandomPostColor = useMemo(() => {
         const hash = post.id.split('').reduce((acc, char) => {
@@ -23,12 +22,12 @@ export default function Posts({ post }: PostProps) {
     }, [post.id]) // Only recalculate if post.id changes
 
     const { user } = useAuth()
-    const {
-        likesCount,
-        isLikedByCurrentUser,
-        toggleLike,
-        isLoading
-    } = usePostLikes(post.id, user?.id)
+    // const {
+    //     likesCount,
+    //     isLikedByCurrentUser,
+    //     toggleLike,
+    //     isLoading
+    // } = usePostLikes(post.id, user?.id)
 
 
     return (
@@ -75,10 +74,12 @@ export default function Posts({ post }: PostProps) {
                             <p>{post.viewsCount}</p>
                         </li>
                         {/* likes */}
-                        <li className='flex gap-x-2'>
-                            <button onClick={toggleLike} disabled={isLoading || !user}> <HeartIcon size={18} className={`${isLikedByCurrentUser ? 'fill-current text-red-400' : ''}`} /></button>
-                            <p>{likesCount > 0 ? likesCount : '0'}</p>
-                        </li>
+                        {/* <li className='flex gap-x-2'>
+                            <button onClick={toggleLike} disabled={isLoading || !user} className={`${isLikedByCurrentUser ? 'text-red-500' : 'text-gray-500'}`}>
+                                <HeartIcon size={18} className={`${isLikedByCurrentUser ? 'fill-current text-red-400' : ''}`} />
+                            </button>
+                            <p> {likesCount}</p>
+                        </li> */}
                         {/* comment */}
                         <li className='flex gap-x-2'>
                             <MessageCircleIcon size={18} />

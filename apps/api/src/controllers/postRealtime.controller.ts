@@ -183,8 +183,18 @@ export const postLikes = async (req: Request, res: Response) => {
     }
 }
 
-//clean up disconnected clients periodically 
+// view endpoint 
+export const postViews = async(req:Request,res:Response) =>{
+    try {
+        
+        
+    } catch (error) {
+        console.error(error);
+        return res.json({message:"server error"})
+    }
+}
 
+//clean up disconnected clients periodically 
 setInterval(() => {
     sseClients.forEach((clients, postId) => {
         const activeClients = clients.filter(client => !client.destroyed)

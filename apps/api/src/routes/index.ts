@@ -8,7 +8,7 @@ import { uploadRouter } from './upload.route'
 import { followRouter } from './follow.route'
 // mount all routes with their prefixes
 
-router.use('/', protect, postRouter)
+router.use('/', postRouter)
 router.use('/upload', uploadRouter)
 router.use('/',protect, followRouter)
 
