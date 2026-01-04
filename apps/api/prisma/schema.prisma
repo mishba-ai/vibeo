@@ -21,7 +21,7 @@ model User {
   bio         String?
   avatar      String? //profile picture url 
 
-  googleId String?       @unique
+  googleId String? @unique
 
   // timestamps
   createdAt DateTime @default(now())
@@ -31,6 +31,7 @@ model User {
   posts    Post[]
   comments Comment[]
   likes    Like[]
+  views    View[]
 
   followers Follow[] @relation("UserFollowers")
   following Follow[] @relation("UserFollowing")
@@ -71,13 +72,12 @@ model Post {
   // Soft delete
   deleted   Boolean   @default(false)
   deletedAt DateTime?
+  View      View[]
 
   @@index([authorId])
   @@index([createdAt])
   @@map("posts")
 }
-
-
 
 model Comment {
   id      String @id @default(uuid())
@@ -101,7 +101,8 @@ model Comment {
   likes Like[]
 
   //comment metadata
-  likesCount Int @default(0)
+  likesCount Int    @default(0)
+  View       View[]
 
   @@index([postId])
   @@index([authorId])
@@ -128,6 +129,28 @@ model Like {
   @@unique([userId, postId])
   @@unique([userId, commentId])
   @@map("likes")
+}
+
+model View {
+  id String @id @default(uuid())
+  
+  //user who viewed
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  // What was viewed (post or comment)
+  Post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  postId String?
+
+  comment   Comment? @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  commentId String?
+
+  createdAt DateTime @default(now())
+
+  // Ensure user can't like the same thing twice
+  @@unique([userId, postId])
+  @@unique([userId, commentId])
+  @@map("views")
 }
 
 // Follow model - User following relationships

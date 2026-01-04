@@ -6,6 +6,8 @@ import type { Post } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { usePostRealtime } from '@/hooks/usePostRealtime';
 import { useMemo } from 'react';
+import { usePostViews } from '@/hooks/usePostViews';
+
 interface PostProps {
     post: Post;
 }
@@ -22,17 +24,22 @@ export default function Posts({ post }: PostProps) {
     }, [post.id]) // Only recalculate if post.id changes
 
     const { user } = useAuth()
-    // const {
-    //     likesCount,
-    //     isLikedByCurrentUser,
-    //     toggleLike,
-    //     isLoading
-    // } = usePostLikes(post.id, user?.id)
+    const {
+        likesCount,
+        likedBy,
+        // toggleLike,
+        // isLoading,
+        viewsCount,
+        isLiked,
+        isViewed,
+        viewedBy
+    } = usePostRealtime(post.id,post)
 
-
+    usePostViews(post.id)
     return (
         <div>
             <div
+                id={`post-${post.id}`}
                 className=' w-full h-auto p-4 rounded-2xl gap-y-3'
                 key={post.id}
                 style={{ backgroundColor: getRandomPostColor }} >
@@ -71,7 +78,7 @@ export default function Posts({ post }: PostProps) {
                         {/* views */}
                         <li className='flex gap-x-2'>
                             <Eye size={18} />
-                            <p>{post.viewsCount}</p>
+                            <p>{viewsCount}</p>
                         </li>
                         {/* likes */}
                         {/* <li className='flex gap-x-2'>
