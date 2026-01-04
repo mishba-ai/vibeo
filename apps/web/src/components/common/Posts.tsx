@@ -7,6 +7,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { usePostRealtime } from '@/hooks/usePostRealtime';
 import { useMemo } from 'react';
 import { usePostViews } from '@/hooks/usePostViews';
+import { usePostLike } from '@/hooks/usePostLike';
 
 interface PostProps {
     post: Post;
@@ -26,16 +27,12 @@ export default function Posts({ post }: PostProps) {
     const { user } = useAuth()
     const {
         likesCount,
-        likedBy,
-        // toggleLike,
-        // isLoading,
-        viewsCount,
         isLiked,
-        isViewed,
-        viewedBy
-    } = usePostRealtime(post.id,post)
-
+        viewsCount,
+    } = usePostRealtime(post.id, post)
     usePostViews(post.id)
+    const { toggleLike, isLoading } = usePostLike(post.id)
+
     return (
         <div>
             <div
@@ -81,12 +78,12 @@ export default function Posts({ post }: PostProps) {
                             <p>{viewsCount}</p>
                         </li>
                         {/* likes */}
-                        {/* <li className='flex gap-x-2'>
-                            <button onClick={toggleLike} disabled={isLoading || !user} className={`${isLikedByCurrentUser ? 'text-red-500' : 'text-gray-500'}`}>
-                                <HeartIcon size={18} className={`${isLikedByCurrentUser ? 'fill-current text-red-400' : ''}`} />
+                        <li className='flex gap-x-2'>
+                            <button onClick={toggleLike} disabled={isLoading||!user} className="transition-transform active:scale-90">
+                                <HeartIcon size={18} className={`${isLiked ? 'fill-current text-red-400' : ''}`} />
                             </button>
                             <p> {likesCount}</p>
-                        </li> */}
+                        </li>
                         {/* comment */}
                         <li className='flex gap-x-2'>
                             <MessageCircleIcon size={18} />
