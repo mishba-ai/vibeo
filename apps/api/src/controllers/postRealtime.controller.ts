@@ -1,5 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
+import { es, id } from 'zod/v4/locales'
 
 //store active sse connections
 let sseClients: Response[] = []
@@ -17,7 +18,7 @@ export const subscribeToPostUpdates = async (req: Request, res: Response) => {
     res.write('data:{"type":"connected"}\n\n')
 
     sseClients.push(res)
-    
+
     //handle client disconnect
     req.on('close', () => {
         sseClients = sseClients.filter(client => client !== res);
@@ -206,4 +207,63 @@ export const postViews = async (req: Request, res: Response) => {
     }
 }
 
+//comments endpoint
+export const postComments = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id;
+        const { content } = req.body;
+        const postId = req.params.postId;
 
+        if (!userId || !postId || !content) {
+            return res.status(400).json("Missing required fields");
+        }
+        // check if posts exists
+        const post = await prisma.post.findUnique(
+            { where: { id: postId } }
+        )
+
+        if (!post) return res.status(404).json("post not found")
+
+        const newComment = await prisma.$transaction(async (tx) => {
+            const comment = await tx.comment.create({
+                data: {
+                    content,
+                    authorId: userId,
+                    postId: postId
+                },
+                include: {
+                    author: {
+                        select: { id: true, username: true, avatar: true }
+                    }
+                }
+            }
+
+            )
+            await tx.post.update({
+                where: { id: postId },
+                data: { commentsCount: { increment: 1 } }
+            })
+            return comment;
+        });
+
+        broadcastPostUpdate(postId, {
+            type: 'newComment',
+            postId: postId,
+            comment: {
+                id: newComment.id,
+                content: newComment.content,
+                createdAt: newComment.createdAt,
+            },
+            author: {
+                username: newComment.author.username,
+                avatar: newComment.author.avatar
+            },
+            commentsCount: post.commentsCount + 1
+        })
+
+        return res.status(201).json(newComment)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("Internal server error")
+    }
+}

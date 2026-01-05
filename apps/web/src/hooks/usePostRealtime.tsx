@@ -8,6 +8,7 @@ interface PostUpdateState {
     isViewed: boolean
     likedBy: string[]
     viewedBy: string[]
+    commentsCount:number
 }
 
 export const usePostRealtime = (postId: string,initialData: any) => {
@@ -18,7 +19,9 @@ export const usePostRealtime = (postId: string,initialData: any) => {
         isLiked: user ? initialData?.likes?.some((l: any) => l.userId === user.id) : false,
         isViewed: user ? initialData?.View?.some((v: any) => v.userId === user.id) : false,
         likedBy: initialData?.likes?.map((l: any) => l.userId) || [],
-        viewedBy: initialData?.View?.map((v: any) => v.userId) || []
+        viewedBy: initialData?.View?.map((v: any) => v.userId) || [],
+        commentsCount:initialData?.comment.map((v:any) => v.userId) || [],
+        
     })
     useEffect(() => {
         const handleUpdate = (event: any) => {
@@ -35,7 +38,8 @@ export const usePostRealtime = (postId: string,initialData: any) => {
                         isLiked: user ? data.likedBy?.includes(user.id) : false,
                         isViewed: user ? data.viewedBy?.includes(user.id) : false,
                         likedBy: data.likedBy || [],
-                        viewedBy: data.viewedBy || []
+                        viewedBy: data.viewedBy || [],
+                        commentsCount:data.commentsCount || 0
                     })
                     break
 
@@ -56,6 +60,13 @@ export const usePostRealtime = (postId: string,initialData: any) => {
                         viewedBy: data.viewedBy || []
                     }))
                     break
+                case 'newComment':
+                    setState(prev=>({
+                        ...prev,
+                        commentsCount:data.commentsCount,
+                        
+                    }))
+                
             }
         }
         window.addEventListener(`post-update-${postId}`, handleUpdate)
