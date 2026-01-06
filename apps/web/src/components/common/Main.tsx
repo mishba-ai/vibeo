@@ -5,7 +5,7 @@ import FollowingFeed from "../feed/FollowingFeed"
 export default function Main() {
     const [activeTab, setActiveTab] = useState('foryou')
     const tabs = [
-        { id: 'foryou', label: 'for you ' },
+        { id: 'foryou', label: 'for you' },
         { id: 'following', label: 'Following' }
     ]
     return (

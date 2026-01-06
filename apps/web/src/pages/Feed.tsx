@@ -5,10 +5,7 @@ export default function Feed() {
     useFeedSSE()
     return (
         <>
-        
             <Main />
-
-            {/*  */}
         </>
     )
 }

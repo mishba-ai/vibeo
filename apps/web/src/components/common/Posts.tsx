@@ -5,17 +5,18 @@ import { Link } from 'react-router'
 import type { Post } from '@/types';
 import { useAuth } from '@/hooks/useAuth';
 import { usePostRealtime } from '@/hooks/usePostRealtime';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { usePostViews } from '@/hooks/usePostViews';
 import { usePostLike } from '@/hooks/usePostLike';
+import { CommentPopup } from './CommentPopup';
 
 interface PostProps {
     post: Post;
 }
 
 export default function Posts({ post }: PostProps) {
-    //random color posts 
 
+    //random color posts 
     const getRandomPostColor = useMemo(() => {
         const hash = post.id.split('').reduce((acc, char) => {
             return char.charCodeAt(0) + ((acc << 5) - acc);
@@ -29,15 +30,24 @@ export default function Posts({ post }: PostProps) {
         likesCount,
         isLiked,
         viewsCount,
+        commentsCount
     } = usePostRealtime(post.id, post)
+
     usePostViews(post.id)
     const { toggleLike, isLoading } = usePostLike(post.id)
+
+    // commentpost  
+    const [commentbtn, setCommentbtn] = useState(false)
+
+    function openCommmentPopup() {
+        setCommentbtn(!commentbtn)
+    }
 
     return (
         <div>
             <div
                 id={`post-${post.id}`}
-                className=' w-full h-auto p-4 rounded-2xl gap-y-3'
+                className={`w-full h-auto p-4 rounded-2xl gap-y-3 `}
                 key={post.id}
                 style={{ backgroundColor: getRandomPostColor }} >
                 {/* posts header */}
@@ -79,19 +89,24 @@ export default function Posts({ post }: PostProps) {
                         </li>
                         {/* likes */}
                         <li className='flex gap-x-2'>
-                            <button onClick={toggleLike} disabled={isLoading||!user} className="transition-transform active:scale-90">
+                            <button onClick={toggleLike} disabled={isLoading || !user} className="transition-transform active:scale-90">
                                 <HeartIcon size={18} className={`${isLiked ? 'fill-current text-red-400' : ''}`} />
                             </button>
                             <p> {likesCount}</p>
                         </li>
                         {/* comment */}
                         <li className='flex gap-x-2'>
-                            <MessageCircleIcon size={18} />
-                            <p>{post.commentsCount}</p>
+                            <button onClick={openCommmentPopup}><MessageCircleIcon size={18} /></button>
+                            <p>{commentsCount}</p>
                         </li>
                     </ul>
                 </div>
             </div>
+            {commentbtn && (
+                <div className='w-full flex justify-center items-center'>
+                    <CommentPopup onClose={()=>setCommentbtn(false)} post={post}/>
+                </div>
+            )}
         </div>
     )
 }

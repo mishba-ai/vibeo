@@ -20,7 +20,7 @@ export const usePostRealtime = (postId: string,initialData: any) => {
         isViewed: user ? initialData?.View?.some((v: any) => v.userId === user.id) : false,
         likedBy: initialData?.likes?.map((l: any) => l.userId) || [],
         viewedBy: initialData?.View?.map((v: any) => v.userId) || [],
-        commentsCount:initialData?.comment.map((v:any) => v.userId) || [],
+        commentsCount:initialData?.comments.map((v:any) => v.userId) || [],
         
     })
     useEffect(() => {
@@ -28,7 +28,7 @@ export const usePostRealtime = (postId: string,initialData: any) => {
             const data = event.detail;
             switch (data.type) {
                 case 'connected':
-                    console.log('✅ SSE Connected')
+                    console.log('SSE Connected')
                     break
 
                 case 'initial':
