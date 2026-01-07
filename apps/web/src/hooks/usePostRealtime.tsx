@@ -20,8 +20,7 @@ export const usePostRealtime = (postId: string,initialData: any) => {
         isViewed: user ? initialData?.View?.some((v: any) => v.userId === user.id) : false,
         likedBy: initialData?.likes?.map((l: any) => l.userId) || [],
         viewedBy: initialData?.View?.map((v: any) => v.userId) || [],
-        commentsCount:initialData?.comments.map((v:any) => v.userId) || [],
-        
+        commentsCount:initialData?.comments?.map((v:any) => v.userId) || [],
     })
     useEffect(() => {
         const handleUpdate = (event: any) => {

@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import type { Post } from "@/types";
-import { Textarea } from "@repo/ui/components/ui/textarea";
 import { useAuth } from "@/hooks/useAuth";
-import { X } from "lucide-react";
+import { X, } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-
+import { PostComposer } from "./PostComposer";
+import api from "@/api/axiosInstance";
 
 interface CommentPopupProps {
     onClose: () => void;
@@ -23,6 +23,9 @@ export const CommentPopup = ({ onClose, post }: CommentPopupProps) => {
         }
     }, [])
 
+    const handleCreateComment = async (content: string, media: string[]) => {
+        await api.post(`api/v1/posts/${post.id}/comments`, { content, media })
+    }
     return (
         <>
             <div className="flex justify-center items-center backdrop-blur-sm z-40 fixed inset-0 bg-black/40 ">
@@ -30,22 +33,23 @@ export const CommentPopup = ({ onClose, post }: CommentPopupProps) => {
                     <div className="w-[540px] h-auto rounded-2xl bg-purple-100 p-4">
                         <button className="" onClick={onClose}> <X /> </button>
                         {/* replying to  */}
-                        <div className="flex gap-x-2 mt-8">
-                            <div className="">
-                                <img src={post.author.avatar || ''} alt="img" className="w-10 h-10 rounded-full " />
-                             {/* <div className="w-0.5 h-full bg-gray-300 my-1 min-h-[20px]"></div> */}
+                        <div className="flex gap-x-4 mt-8">
+                            <div className="flex flex-col items-center">
+                                <img src={post.author.avatar || ''} alt="img" className="w-10 h-10 rounded-full aspect-square object-cover" />
+                                <div className="w-0.5  h-full bg-purple-200 mt-1 min-h-[]"></div>
 
                             </div>
                             <div>
-                                <div className=" flex gap-x-2 ">
+                                <div className=" flex gap-x-2 items-baseline">
                                     <h1 className="text-md font-bold">{post.author.username}</h1>
-                                    <p className="text-sm text-gray-800"> {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
+                                    <p className="text-xs text-gray-400"> {formatDistanceToNow(new Date(post.createdAt), { addSuffix: true })}</p>
                                 </div>
-                                <div>
+                                <div className="mt-1">
                                     {post.content}
+
                                 </div>
-                                <div className="mt-2 mb-2">
-                                    <p className="text-xs text-gray-800">
+                                <div className="mt-4 mb-2">
+                                    <p className="text-xs text-gray-400 font-medium">
                                         Replying to <span className="text-purple-800"> @{post.author.username}</span>
                                     </p>
                                 </div>
@@ -57,10 +61,14 @@ export const CommentPopup = ({ onClose, post }: CommentPopupProps) => {
                             <div>
                                 <img src={user?.avatar} alt="" className="w-10 h-10 rounded-full" />
                             </div>
-                            <div className="w-full ">
-                                <Textarea placeholder="Reply to Post" className="resize-none  focus-visible:ring-0 ring-0 border-0 outline-0 min-h-12 w-[90%] bg-gray-50"/> 
-                            </div>
-                        </div>
+
+                            <PostComposer
+                                placeholder="Post your reply"
+                                buttonText="Reply"
+                                onSubmit={handleCreateComment}
+                                onSuccess={onClose}
+                            />                        </div>
+
 
                     </div>
                 </div>
