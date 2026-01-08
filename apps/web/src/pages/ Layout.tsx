@@ -1,11 +1,12 @@
 import { Outlet, useLocation } from "react-router"
 import { Fsidebar, Contentsidebar } from "@/components/feed/index"
 
+
 export default function Layout() {
   const location = useLocation()
   // Pages that should show the content sidebar
   const showContentSidebar = ['/feed', '/notifications', '/users/'].some(path =>
-    location.pathname.startsWith(path)
+    location.pathname.startsWith(path) || /^\/[^/]+\/[^/]+$/.test(location.pathname)
   )
 
   return (

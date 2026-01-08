@@ -230,6 +230,7 @@ export const postComments = async (req: Request, res: Response) => {
                     content,
                     authorId: userId,
                     postId: postId
+
                 },
                 include: {
                     author: {
@@ -265,5 +266,45 @@ export const postComments = async (req: Request, res: Response) => {
     } catch (error) {
         console.error(error);
         return res.status(500).json("Internal server error")
+    }
+}
+
+// get all teh comments of the specific post
+export const getComments = async (req: Request, res: Response) => {
+    try {
+
+        const postId = req.params.postId
+        if (!postId) {
+            return res.status(404).json("post not found")
+        }
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                postId: postId
+            },
+            orderBy: {
+                createdAt: 'desc'
+            },
+            select: {
+                id: true,
+                createdAt: true,
+                content: true,
+                likesCount:true,
+                View:true,
+                
+                author: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                    }
+                }
+            }
+        })
+
+        res.status(200).json(comments)
+
+    } catch (error) {
+        console.error(error);
     }
 }

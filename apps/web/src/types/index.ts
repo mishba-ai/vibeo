@@ -28,3 +28,11 @@ export interface Post {
   deletedAt: Date | string | null;
 }
 
+export interface Comment {
+  id : string ;
+  content: string;
+  parentId:string;
+  createdAt:Date | string ;
+  updatedAt:Date | string;
+  
+}

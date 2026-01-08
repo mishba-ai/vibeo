@@ -4,9 +4,10 @@ import Feed from "@/pages/Feed"
 import Messages from "@/pages/Messages";
 import NotFound from "@/pages/NotFound";
 import Notification from "@/pages/Notification";
+import { PostDetail } from "@/pages/PostDetail";
 import Settings from "@/pages/Settings";
 import Timeline from "@/pages/Timeline";
-
+import type { Post } from "@/types";
 
 const routes = [
   {
@@ -36,6 +37,10 @@ const routes = [
       , {
         path: "settings",
         element: <Settings />
+      },
+      {
+        path:'/:username/:postId',
+        element:<PostDetail/>
       }
     ]
   }

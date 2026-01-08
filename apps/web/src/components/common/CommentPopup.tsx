@@ -24,14 +24,14 @@ export const CommentPopup = ({ onClose, post }: CommentPopupProps) => {
     }, [])
 
     const handleCreateComment = async (content: string, media: string[]) => {
-        await api.post(`api/v1/posts/${post.id}/comments`, { content, media })
+        await api.post(`api/v1/posts/${post.id}/comment`, { content, media })
     }
     return (
         <>
-            <div className="flex justify-center items-center backdrop-blur-sm z-40 fixed inset-0 bg-black/40 ">
+            <div className="flex justify-center items-center backdrop-blur-sm z-40 fixed inset-0 bg-black/40 " onClick={(e) => e.stopPropagation()} >
                 <div className="absolute top-10">
                     <div className="w-[540px] h-auto rounded-2xl bg-purple-100 p-4">
-                        <button className="" onClick={onClose}> <X /> </button>
+                        <button className="" onClick={(e) => {e.stopPropagation(); onClose();}}> <X /> </button>
                         {/* replying to  */}
                         <div className="flex gap-x-4 mt-8">
                             <div className="flex flex-col items-center">
@@ -67,9 +67,8 @@ export const CommentPopup = ({ onClose, post }: CommentPopupProps) => {
                                 buttonText="Reply"
                                 onSubmit={handleCreateComment}
                                 onSuccess={onClose}
-                            />                        </div>
-
-
+                            />                      
+                          </div>
                     </div>
                 </div>
             </div>

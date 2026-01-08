@@ -13,5 +13,6 @@ postRouter.get('/posts/subscribe', subscribeToPostUpdates)
 postRouter.post('/posts/:postId/like', protect, postLikes)
 postRouter.post('/posts/:postId/view', protect, postViews)
 postRouter.post('/posts/:postId/comment', protect, postComments)
-
+postRouter.post('/posts/:postId')
+postRouter.get('/posts/:postId/comments')
 export { postRouter }

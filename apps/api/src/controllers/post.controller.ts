@@ -186,11 +186,5 @@ const getFollowingFeeds = async (req: Request, res: Response) => {
 
 }
 
-const postViews = async () => {
-
-}
-
-// only render once 
-
 
 export { createPost, getPosts, getUserProfile, getFollowingFeeds }
