@@ -15,7 +15,6 @@ export const usePostLike = (postId: string,type: 'post' | 'comment' = 'post') =>
                 ? `/api/v1/posts/${postId}/like`
                 : `/api/v1/comments/${postId}/like`;
             await api.post(endpoint);
-            // await api.post(`api/v1/posts/${postId}/like`)
         } catch (error) {
             console.error('Error toggling like', error)
         } finally {

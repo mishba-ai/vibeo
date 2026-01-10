@@ -5,8 +5,10 @@ import type { Post } from "@/types"
 import { useState, useEffect } from "react";
 import api from "@/api/axiosInstance";
 import { useParams } from "react-router";
+import { useFeedSSE } from '@/hooks/useFeedSSE'
 
 export const PostDetail = () => {
+    useFeedSSE()
 
   const [onClose, setOnclose] = useState<Post>()
   const [post, setPost] = useState<Post>()

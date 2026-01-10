@@ -2,17 +2,17 @@ import api from "@/api/axiosInstance"
 import { useAuth } from "./useAuth"
 import { useEffect, useRef } from "react"
 
-export const usePostViews = (postId: string, type: 'post' | 'comment' = 'post') => {
+export const usePostViews = (id: string, type: 'post' | 'comment' = 'post') => {
     const { user } = useAuth()
     const hasViewed = useRef(false)
 
     const trackView = async () => {
-        if (!user || !postId || hasViewed.current) return
+        if (!user  || hasViewed.current) return
         try {
             hasViewed.current = true
             const endpoint = type === 'post'
-                ? `/api/v1/posts/${postId}/view`
-                : `/api/v1/comments/${postId}/view`;
+                ? `/api/v1/posts/${id}/view`
+                : `/api/v1/comments/${id}/view`;
             await api.post(endpoint);
         } catch (error) {
             console.error('error tracking view', error);
@@ -21,7 +21,7 @@ export const usePostViews = (postId: string, type: 'post' | 'comment' = 'post') 
     }
 
     useEffect(() => {
-        if (!user || !postId) return
+        if (!user || !id) return
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 // Trigger view when 50% of post is visible for at least 1 second
@@ -36,7 +36,7 @@ export const usePostViews = (postId: string, type: 'post' | 'comment' = 'post') 
                 rootMargin: '0px'
             }
         )
-        const element = document.getElementById(`${type}-${postId}`)
+        const element = document.getElementById(`${type}-${id}`)
         if (element) {
             observer.observe(element)
         }
@@ -46,6 +46,6 @@ export const usePostViews = (postId: string, type: 'post' | 'comment' = 'post') 
                 observer.unobserve(element)
             }
         }
-    }, [postId, user,type])
+    }, [id, user,type])
     return { trackView }
 }

@@ -27,7 +27,8 @@ export const subscribeToPostUpdates = async (req: Request, res: Response) => {
 
 // Function to broadcast updates to all clients subscribed to a specific post
 export const broadcastPostUpdate = (postId: string, data: any) => {
-    const message = `data:${JSON.stringify(data)}\n\n`;
+    const message = `data:${JSON.stringify({ postId, ...data })}\n\n`;
+
     sseClients.forEach(client => {
         try {
             client.write(message);
@@ -75,14 +76,14 @@ export const postLikes = async (req: Request, res: Response) => {
             updatedEntity = await prisma.$transaction(async (tx) => {
                 await tx.like.delete({ where: { id: existingLike.id } })
 
-                
-                    return await tx.post.update({
-                        where: { id: postId },
-                        data: { likesCount: { decrement: 1 } },
-                        include: { likes: { select: { userId: true } } }
-                    })
-               
-                
+
+                return await tx.post.update({
+                    where: { id: postId },
+                    data: { likesCount: { decrement: 1 } },
+                    include: { likes: { select: { userId: true } } }
+                })
+
+
             })
             isLiked = false
         } else {
@@ -92,13 +93,13 @@ export const postLikes = async (req: Request, res: Response) => {
                     data: { userId: authenticatedUserId, postId: postId }
                 });
 
-               
-                    return await tx.post.update({
-                        where: { id: postId },
-                        data: { likesCount: { increment: 1 } },
-                        include: { likes: { select: { userId: true } } }
-                    })
-               
+
+                return await tx.post.update({
+                    where: { id: postId },
+                    data: { likesCount: { increment: 1 } },
+                    include: { likes: { select: { userId: true } } }
+                })
+
             })
             isLiked = true
         }
@@ -273,7 +274,7 @@ export const commentView = async (req: Request, res: Response) => {
             return res.status(400).json({ error: 'commentId and userId are required' })
         }
 
-        //check if comments exists
+        // Check if comment exists
         const comment = await prisma.comment.findUnique({
             where: { id: commentId }
         })
@@ -282,6 +283,7 @@ export const commentView = async (req: Request, res: Response) => {
             return res.status(404).json({ error: 'comment not found' })
         }
 
+        // Check existing view
         const existingView = await prisma.view.findFirst({
             where: {
                 commentId: commentId,
@@ -289,38 +291,49 @@ export const commentView = async (req: Request, res: Response) => {
             }
         });
 
-        if (!existingView) {
-            // Create new view
-            await prisma.view.create({
-                data: {
-                    commentId: commentId,
-                    userId: userId
-                }
-            });
+        let updatedComment;
+        let isViewed = false;
 
-            // Get updated view count
-            const viewsCount = await prisma.view.count({
-                where: { commentId: commentId }
+        if (!existingView) {
+            // Create new view and increment counter
+            updatedComment = await prisma.$transaction(async (tx) => {
+                await tx.view.create({
+                    data: {
+                        commentId: commentId,
+                        userId: userId
+                    }
+                });
+
+                return await tx.comment.update({
+                    where: { id: commentId },
+                    data: { viewsCount: { increment: 1 } },
+                    include: { View: { select: { userId: true } } }
+                });
             });
-            const viewedBy = await prisma.view.findMany({
-                where: { commentId: commentId },
-                select: { userId: true }
+            isViewed = true;
+        } else {
+            // Fetch current comment data
+            updatedComment = await prisma.comment.findUnique({
+                where: { id: commentId },
+                include: { View: { select: { userId: true } } }
             });
+        }
+
+        if (updatedComment) {
             broadcastPostUpdate(commentId, {
                 type: 'viewUpdate',
-                viewsCount,
+                commentId,
+                viewsCount: updatedComment.viewsCount,
                 userId,
-                isviewed: true,
-                viewedBy: viewedBy.map(v => v.userId)
-            })
-            return res.json({ viewsCount, isViewed: true });
-
+                isViewed,
+                viewedBy: updatedComment.View.map(v => v.userId)
+            });
         }
-        const viewsCount = await prisma.view.count({
-            where: { commentId: commentId }
-        });
 
-        res.json({ viewsCount, isViewed: true });
+        return res.json({
+            viewsCount: updatedComment?.viewsCount || 0,
+            isViewed
+        });
 
     } catch (error) {
         console.error('Error tracking comment view:', error);
@@ -354,46 +367,56 @@ export const commentLike = async (req: Request, res: Response) => {
             }
         });
 
+        let updatedComment;
         let isLiked = false;
 
         if (existingLike) {
-            // Unlike
-            await prisma.like.delete({
-                where: { id: existingLike.id }
+            // Unlike - delete like and decrement counter
+            updatedComment = await prisma.$transaction(async (tx) => {
+                await tx.like.delete({
+                    where: { id: existingLike.id }
+                });
+
+                return await tx.comment.update({
+                    where: { id: commentId },
+                    data: { likesCount: { decrement: 1 } },
+                    include: { likes: { select: { userId: true } } }
+                });
             });
             isLiked = false;
         } else {
-            // Like
-            await prisma.like.create({
-                data: {
-                    commentId: commentId,
-                    userId: userId
-                }
+            // Like - create like and increment counter
+            updatedComment = await prisma.$transaction(async (tx) => {
+                await tx.like.create({
+                    data: {
+                        commentId: commentId,
+                        userId: userId
+                    }
+                });
+
+                return await tx.comment.update({
+                    where: { id: commentId },
+                    data: { likesCount: { increment: 1 } },
+                    include: { likes: { select: { userId: true } } }
+                });
             });
             isLiked = true;
         }
 
-        // Get updated like count
-        const likesCount = await prisma.like.count({
-            where: { commentId: commentId }
-        });
-
-        // Get all users who liked
-        const likedBy = await prisma.like.findMany({
-            where: { commentId: commentId },
-            select: { userId: true }
-        });
-
-        // Emit SSE event
+        // Broadcast SSE event
         broadcastPostUpdate(commentId, {
             type: 'likeUpdate',
-            likesCount,
+            commentId,
+            likesCount: updatedComment.likesCount,
             userId,
             isLiked,
-            likedBy: likedBy.map(l => l.userId)
+            likedBy: updatedComment.likes.map(l => l.userId)
         });
 
-        res.json({ likesCount, isLiked });
+        res.json({
+            likesCount: updatedComment.likesCount,
+            isLiked
+        });
     } catch (error) {
         console.error('Error toggling comment like:', error);
         res.status(500).json({ error: 'Failed to toggle like' });
@@ -422,8 +445,8 @@ export const getComments = async (req: Request, res: Response) => {
                 content: true,
                 likesCount: true,
                 updatedAt: true,
-                media:true,
-                viewsCount:true,
+                media: true,
+                viewsCount: true,
                 author: {
                     select: {
                         id: true,
@@ -431,7 +454,7 @@ export const getComments = async (req: Request, res: Response) => {
                         avatar: true
                     }
                 },
-                 likes: {
+                likes: {
                     select: {
                         userId: true
                     }
@@ -444,7 +467,7 @@ export const getComments = async (req: Request, res: Response) => {
 
             }
         })
-const commentsWithCounts = comments.map(comment => ({
+        const commentsWithCounts = comments.map(comment => ({
             ...comment,
             likesCount: comment.likes.length,
             viewsCount: comment.View.length,

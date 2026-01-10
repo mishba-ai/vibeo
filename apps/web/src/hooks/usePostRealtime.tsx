@@ -11,7 +11,7 @@ interface PostUpdateState {
     commentsCount:number
 }
 
-export const usePostRealtime = (postId: string,initialData: any) => {
+export const usePostRealtime = (itemId: string,initialData: any) => {
     const { user } = useAuth()
     const [state, setState] = useState<PostUpdateState>({
       likesCount: initialData?.likesCount || 0,
@@ -71,9 +71,9 @@ export const usePostRealtime = (postId: string,initialData: any) => {
                     }))
             }
         }
-        window.addEventListener(`post-update-${postId}`, handleUpdate)
-        return () => window.removeEventListener(`post-update-${postId}`, handleUpdate);
-    }, [postId, user?.id])
+        window.addEventListener(`post-update-${itemId}`, handleUpdate)
+        return () => window.removeEventListener(`post-update-${itemId}`, handleUpdate);
+    }, [itemId, user?.id])
 
     return state
 }

@@ -3,7 +3,7 @@ import { useState, useEffect, useRef } from "react"
 import type { Post } from "@/types"
 
 
-export const usePostComments = (postId: String) => {
+export const usePostComments = (commentId: String) => {
     const [comments, setComments] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true)
 
@@ -11,7 +11,7 @@ export const usePostComments = (postId: String) => {
         const fetchComments = async () => {
             try {
                 setIsLoading(true);
-                const response = await api.get(`/api/v1/posts/${postId}/comments`);
+                const response = await api.get(`/api/v1/posts/${commentId}/comments`);
                 setComments(response.data)
             } catch (error) {
                 console.error(error);
@@ -19,8 +19,8 @@ export const usePostComments = (postId: String) => {
                 setIsLoading(false)
             }
         }
-        if (postId) fetchComments()
-    }, [postId]);
+        if (commentId) fetchComments()
+    }, [commentId]);
 
     useEffect(() => {
         const handleNewComment = (event: any) => {
@@ -41,15 +41,15 @@ export const usePostComments = (postId: String) => {
                 setComments(prev => [newComment as Post, ...prev])
             }
         }
-        window.addEventListener(`post-update-${postId}`, handleNewComment);
+        window.addEventListener(`post-update-${commentId}`, handleNewComment);
         return () => {
-            window.removeEventListener(`post-update-${postId}`, handleNewComment);
+            window.removeEventListener(`post-update-${commentId}`, handleNewComment);
         };
-    }, [postId])
+    }, [commentId])
 
     const addComment = async (content: string) => {
         try {
-            const response = await api.post(`/api/v1/posts/${postId}/comment`, { content })
+            const response = await api.post(`/api/v1/posts/${commentId}/comment`, { content })
             return response.data;
         } catch (error) {
             console.error(error);
