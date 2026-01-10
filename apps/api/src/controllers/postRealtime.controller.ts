@@ -42,7 +42,7 @@ export const postLikes = async (req: Request, res: Response) => {
     try {
         const authenticatedUserId = req.user?.id;
         if (!authenticatedUserId) {
-            return res.status(401).json('authenticated user not found')
+            return res.status(401).json({ message: 'Authenticated user not found' })
         }
 
         const postId = req.params.postId
@@ -50,15 +50,14 @@ export const postLikes = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Post ID is required' });
         }
 
-        // Check if post exists
-        const post = await prisma.post.findUnique({
-            where: { id: postId }
-        });
+        // Check both post and comment tables
+        const post = await prisma.post.findUnique({ where: { id: postId } });
+
         if (!post) {
-            return res.status(404).json({ message: 'Post not found' });
+            return res.status(404).json({ message: 'Post or comment not found' });
         }
 
-        //check existing like
+        // Check existing like
         const existingLike = await prisma.like.findUnique({
             where: {
                 userId_postId: {
@@ -68,64 +67,60 @@ export const postLikes = async (req: Request, res: Response) => {
             }
         })
 
-        let updatedPost
-        let isliked: boolean;
+        let updatedEntity;
+        let isLiked: boolean;
 
         if (existingLike) {
-            //unlike:remove like
-            updatedPost = await prisma.$transaction(async (tx) => {
-                await tx.like.delete({
-                    where: { id: existingLike.id }
-                })
-                return await tx.post.update({
-                    where: { id: postId },
-                    data: { likesCount: { decrement: 1 } },
-                    include: {
-                        likes: {
-                            select: { userId: true }
-                        }
-                    }
-                })
-            })
+            // Unlike
+            updatedEntity = await prisma.$transaction(async (tx) => {
+                await tx.like.delete({ where: { id: existingLike.id } })
 
-            isliked = false
+                
+                    return await tx.post.update({
+                        where: { id: postId },
+                        data: { likesCount: { decrement: 1 } },
+                        include: { likes: { select: { userId: true } } }
+                    })
+               
+                
+            })
+            isLiked = false
         } else {
-            // like ,create new like
-            updatedPost = await prisma.$transaction(async (tx) => {
+            // Like
+            updatedEntity = await prisma.$transaction(async (tx) => {
                 await tx.like.create({
                     data: { userId: authenticatedUserId, postId: postId }
                 });
 
-                return await tx.post.update({
-                    where: { id: postId },
-                    data: { likesCount: { increment: 1 } },
-                    include: {
-                        likes: {
-                            select: { userId: true }
-                        }
-                    }
-                })
+               
+                    return await tx.post.update({
+                        where: { id: postId },
+                        data: { likesCount: { increment: 1 } },
+                        include: { likes: { select: { userId: true } } }
+                    })
+               
             })
-            isliked = true
+            isLiked = true
         }
-        //broadcast update to all sse clients
+
+        // Broadcast update
         broadcastPostUpdate(postId, {
             type: 'likeUpdate',
             postId,
-            likesCount: updatedPost.likesCount,
+            likesCount: updatedEntity.likesCount,
             userId: authenticatedUserId,
-            isLiked: isliked,
-            likedBy: updatedPost.likes.map(like => like.userId)
+            isLiked: isLiked,
+            likedBy: updatedEntity.likes.map(like => like.userId)
         })
-        // Return response to the client who triggered the like
+
         return res.status(200).json({
             message: 'Success',
-            liked: isliked,
-            likesCount: updatedPost.likesCount
+            liked: isLiked,
+            likesCount: updatedEntity.likesCount
         })
     } catch (error) {
         console.error(error);
-        return res.status(500).json('message:server error')
+        return res.status(500).json({ message: 'Server error' })
     }
 }
 
@@ -253,7 +248,7 @@ export const postComments = async (req: Request, res: Response) => {
             comment: {
                 id: newComment.id,
                 content: newComment.content,
-                createdAt: newComment.createdAt,
+                createdAt: newComment.createdAt.toISOString(),
             },
             author: {
                 username: newComment.author.username,
@@ -269,15 +264,151 @@ export const postComments = async (req: Request, res: Response) => {
     }
 }
 
+export const commentView = async (req: Request, res: Response) => {
+    try {
+        const { commentId } = req.params;
+        const userId = req.user?.id;
+
+        if (!commentId || !userId) {
+            return res.status(400).json({ error: 'commentId and userId are required' })
+        }
+
+        //check if comments exists
+        const comment = await prisma.comment.findUnique({
+            where: { id: commentId }
+        })
+
+        if (!comment) {
+            return res.status(404).json({ error: 'comment not found' })
+        }
+
+        const existingView = await prisma.view.findFirst({
+            where: {
+                commentId: commentId,
+                userId: userId
+            }
+        });
+
+        if (!existingView) {
+            // Create new view
+            await prisma.view.create({
+                data: {
+                    commentId: commentId,
+                    userId: userId
+                }
+            });
+
+            // Get updated view count
+            const viewsCount = await prisma.view.count({
+                where: { commentId: commentId }
+            });
+            const viewedBy = await prisma.view.findMany({
+                where: { commentId: commentId },
+                select: { userId: true }
+            });
+            broadcastPostUpdate(commentId, {
+                type: 'viewUpdate',
+                viewsCount,
+                userId,
+                isviewed: true,
+                viewedBy: viewedBy.map(v => v.userId)
+            })
+            return res.json({ viewsCount, isViewed: true });
+
+        }
+        const viewsCount = await prisma.view.count({
+            where: { commentId: commentId }
+        });
+
+        res.json({ viewsCount, isViewed: true });
+
+    } catch (error) {
+        console.error('Error tracking comment view:', error);
+        res.status(500).json({ error: 'Failed to track view' });
+    }
+}
+
+export const commentLike = async (req: Request, res: Response) => {
+    try {
+        const { commentId } = req.params;
+        const userId = req.user?.id;
+
+        if (!commentId || !userId) {
+            return res.status(400).json({ error: 'commentId and userId are required' })
+        }
+
+        // Check if comment exists
+        const comment = await prisma.comment.findUnique({
+            where: { id: commentId }
+        });
+
+        if (!comment) {
+            return res.status(404).json({ error: 'Comment not found' });
+        }
+
+        // Check if user already liked this comment
+        const existingLike = await prisma.like.findFirst({
+            where: {
+                commentId: commentId,
+                userId: userId
+            }
+        });
+
+        let isLiked = false;
+
+        if (existingLike) {
+            // Unlike
+            await prisma.like.delete({
+                where: { id: existingLike.id }
+            });
+            isLiked = false;
+        } else {
+            // Like
+            await prisma.like.create({
+                data: {
+                    commentId: commentId,
+                    userId: userId
+                }
+            });
+            isLiked = true;
+        }
+
+        // Get updated like count
+        const likesCount = await prisma.like.count({
+            where: { commentId: commentId }
+        });
+
+        // Get all users who liked
+        const likedBy = await prisma.like.findMany({
+            where: { commentId: commentId },
+            select: { userId: true }
+        });
+
+        // Emit SSE event
+        broadcastPostUpdate(commentId, {
+            type: 'likeUpdate',
+            likesCount,
+            userId,
+            isLiked,
+            likedBy: likedBy.map(l => l.userId)
+        });
+
+        res.json({ likesCount, isLiked });
+    } catch (error) {
+        console.error('Error toggling comment like:', error);
+        res.status(500).json({ error: 'Failed to toggle like' });
+    }
+}
+
 // get all teh comments of the specific post
 export const getComments = async (req: Request, res: Response) => {
     try {
-
         const postId = req.params.postId
+        const userId = req.user?.id; // Get authenticated user if available
+
         if (!postId) {
             return res.status(404).json("post not found")
         }
-
         const comments = await prisma.comment.findMany({
             where: {
                 postId: postId
@@ -289,22 +420,42 @@ export const getComments = async (req: Request, res: Response) => {
                 id: true,
                 createdAt: true,
                 content: true,
-                likesCount:true,
-                View:true,
-                
+                likesCount: true,
+                updatedAt: true,
+                media:true,
+                viewsCount:true,
                 author: {
                     select: {
                         id: true,
                         username: true,
                         avatar: true
                     }
+                },
+                 likes: {
+                    select: {
+                        userId: true
+                    }
+                },
+                View: {
+                    select: {
+                        userId: true
+                    }
                 }
+
             }
         })
-
-        res.status(200).json(comments)
+const commentsWithCounts = comments.map(comment => ({
+            ...comment,
+            likesCount: comment.likes.length,
+            viewsCount: comment.View.length,
+            commentsCount: 0, // Comments don't have nested comments (yet)
+        }))
+        res.status(200).json(commentsWithCounts)
 
     } catch (error) {
         console.error(error);
     }
 }
+
+
+

@@ -9,13 +9,13 @@ import { useParams } from "react-router";
 export const PostDetail = () => {
 
   const [onClose, setOnclose] = useState<Post>()
-  const [post, setPost] = useState<Post | null>(null)
+  const [post, setPost] = useState<Post>()
 
   const { postId } = useParams();
   const [mainPost, setMainPost] = useState<Post | null>(null);
 
   const handleCreateComment = async (content: string, media: string[]) => {
-    await api.post(`api/v1/posts/${post?.id}/comment`, { content, media })
+    await api.post(`/api/v1/posts/${postId}/comment`, { content, media })
   }
   // Fetch the main post here...
   useEffect(() => {
@@ -39,7 +39,7 @@ export const PostDetail = () => {
       {/* The Thread Header / Back button would go here */}
 
       {/* 1. The Main Post */}
-      <Posts post={mainPost} isComment={false} />
+      <Posts post={mainPost} />
 
       {/* 2. The Reply Input */}
       <div className="px-4 mt-2  py-2 border-b border-gray-100">

@@ -7,20 +7,20 @@ export const usePostComments = (postId: String) => {
     const [comments, setComments] = useState<Post[]>([]);
     const [isLoading, setIsLoading] = useState(true)
 
-    // useEffect(() => {
-    //     const fetchComments = async () => {
-    //         try {
-    //             setIsLoading(true);
-    //             const response = await api.post(`api/v1/posts/${postId}/comments`);
-    //             setComments(response.data)
-    //         } catch (error) {
-    //             console.error(error);
-    //         } finally {
-    //             setIsLoading(false)
-    //         }
-    //     }
-    //     if (postId) fetchComments()
-    // }, [postId]);
+    useEffect(() => {
+        const fetchComments = async () => {
+            try {
+                setIsLoading(true);
+                const response = await api.get(`/api/v1/posts/${postId}/comments`);
+                setComments(response.data)
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        if (postId) fetchComments()
+    }, [postId]);
 
     useEffect(() => {
         const handleNewComment = (event: any) => {
@@ -35,7 +35,8 @@ export const usePostComments = (postId: String) => {
                     View: [],
                     likesCount: 0,
                     viewsCount: 0,
-                    commentsCount: 0
+                    commentsCount: 0,
+                    media:data.comment.media || [],
                 }
                 setComments(prev => [newComment as Post, ...prev])
             }
@@ -48,7 +49,7 @@ export const usePostComments = (postId: String) => {
 
     const addComment = async (content: string) => {
         try {
-            const response = await api.post(`api/v1/posts/${postId}/comment`, { content })
+            const response = await api.post(`/api/v1/posts/${postId}/comment`, { content })
             return response.data;
         } catch (error) {
             console.error(error);

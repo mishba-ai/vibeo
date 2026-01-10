@@ -186,5 +186,46 @@ const getFollowingFeeds = async (req: Request, res: Response) => {
 
 }
 
+// fetch single post using postid
+const singlePost = async (req: Request, res: Response) => {
+    try {
+        const postId = req.params.postId
+        if (!postId) {
+            return res.status(404).json("post not found")
+        }
 
-export { createPost, getPosts, getUserProfile, getFollowingFeeds }
+        const singlePost =await prisma.post.findUnique({
+            where: {
+                id: postId
+            },
+            select: {
+                id: true,
+                viewsCount: true,
+                commentsCount: true,
+                likesCount: true,
+                createdAt: true,
+                updatedAt: true,
+                content:true,
+                media:true,
+                author: {
+                    select: {
+                        id: true,
+                        avatar: true,
+                        username: true
+                    }
+                },
+                likes: { select: { userId: true } },
+
+            },
+            
+        })
+        res.status(200).json(singlePost)
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json("internal server error")
+    }
+
+
+}
+
+export { createPost, getPosts, getUserProfile, getFollowingFeeds ,singlePost}

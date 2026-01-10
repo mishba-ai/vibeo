@@ -16,11 +16,15 @@ export const usePostRealtime = (postId: string,initialData: any) => {
     const [state, setState] = useState<PostUpdateState>({
       likesCount: initialData?.likesCount || 0,
         viewsCount: initialData?.viewsCount || 0,
-        isLiked: user ? initialData?.likes?.some((l: any) => l.userId === user.id) : false,
+        // isLiked: user && initialData?.likes?.some((l: any) => l.userId === user.id) : false,
+        isLiked: user && initialData.likes 
+                ? initialData.likes.some((l: any) => l.userId === user.id) 
+                : false,
         isViewed: user ? initialData?.View?.some((v: any) => v.userId === user.id) : false,
         likedBy: initialData?.likes?.map((l: any) => l.userId) || [],
         viewedBy: initialData?.View?.map((v: any) => v.userId) || [],
-        commentsCount:initialData?.comments?.map((v:any) => v.userId) || [],
+        // commentsCount:initialData?.comments?.map((v:any) => v.userId) || [],
+        commentsCount: initialData?.commentsCount || 0,
     })
     useEffect(() => {
         const handleUpdate = (event: any) => {
@@ -65,7 +69,6 @@ export const usePostRealtime = (postId: string,initialData: any) => {
                         commentsCount:data.commentsCount,
                         
                     }))
-                
             }
         }
         window.addEventListener(`post-update-${postId}`, handleUpdate)
