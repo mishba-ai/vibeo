@@ -36,12 +36,12 @@ export default function UserProfileComponent() {
     }
   }
 
-   const checkFollowStatus = async () => {
+  const checkFollowStatus = async () => {
     if (!username || !user) return;
-    
+
     try {
       // You'll need to create this endpoint or check from the profile data
-       const response = await api.get(`/api/v1/${username}/follow/status`)
+      const response = await api.get(`/api/v1/${username}/follow/status`)
       setFollow(response.data.isFollowing)
     } catch (error) {
       console.error('Failed to check follow status:', error)
@@ -144,13 +144,15 @@ export default function UserProfileComponent() {
                     </button>
                   </div>
                   <div>
-                    <button className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl'>
-                      Message
-                    </button>
+                    //create a conversation room 
+                    <Link to={`/message/${profile.conversation.id}`}>
+                      <button className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl'>
+                        Message
+                      </button>
+                    </Link>
                   </div>
                 </div>)
-              }
-
+              } 
             </div>
           </div>
           <div className='flex flex-col ml-5 mt-2'>

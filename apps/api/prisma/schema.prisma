@@ -41,9 +41,12 @@ model User {
   triggeredNotifications Notification[] @relation("NotificationTriggerer")
 
   // User statistics (denormalized for performance)
-  postsCount     Int @default(0)
-  followersCount Int @default(0)
-  followingCount Int @default(0)
+  postsCount     Int           @default(0)
+  followersCount Int           @default(0)
+  followingCount Int           @default(0)
+
+  Message        Message[]
+  Conversation Conversation[] @relation("userconversations")  
 
   @@map("users")
 }
@@ -80,17 +83,17 @@ model Post {
 }
 
 model Comment {
-  id        String    @id @default(uuid())
-  content   String
-  media     String[]
+  id       String    @id @default(uuid())
+  content  String
+  media    String[]
   //nested comment support
-  parentId  String?
-  parent    Comment?  @relation("commentReplies", fields: [parentId], references: [id], onDelete: Cascade)
-  replies   Comment[] @relation("commentReplies")
-  
+  parentId String?
+  parent   Comment?  @relation("commentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies  Comment[] @relation("commentReplies")
+
   //timestamps
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   //relations
   author   User   @relation(fields: [authorId], references: [id], onDelete: Cascade)
@@ -157,6 +160,35 @@ model View {
   @@index([postId])
   @@index([commentId])
   @@map("views")
+}
+
+model Message {
+  id    String   @id @default(uuid())
+  text  String
+  media String[]
+
+  sender   User   @relation(fields: [senderId], references: [id])
+  senderId String
+
+  isRead Boolean @default(false)
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  conversationId String
+
+  createdAt  DateTime @default(now())
+  updatedAt DateTime @default(now())
+
+  @@map("messages")
+}
+
+model Conversation {
+  id         String   @id @default(uuid())
+  lastVibeAt DateTime @default(now())
+
+  participants User[]    @relation("userconversations") // Array of User IDs
+  messages     Message[]
+
+  @@map("conversations")
 }
 
 // Follow model - User following relationships

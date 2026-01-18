@@ -6,6 +6,12 @@ export interface User {
   followersCount:number;
   followingCount:number;
   posts: Post[];
+  conversation: Conversation
+
+}
+export interface Conversation{
+  id:string;
+  lastvibeAt : Date |string
 
 }
 
