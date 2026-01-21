@@ -5,13 +5,18 @@ import { Fsidebar, Contentsidebar } from "@/components/feed/index"
 export default function Layout() {
   const location = useLocation()
   // Pages that should show the content sidebar
-  const showContentSidebar = ['/feed', '/notifications', '/users/'].some(path =>
-    location.pathname.startsWith(path) || /^\/[^/]+\/[^/]+$/.test(location.pathname)
+  const hideSidebarRoutes = ['/chat', '/settings']
+  
+  // Check if current path starts with any hide route
+  const shouldHideSidebar = hideSidebarRoutes.some(route => 
+    location.pathname.startsWith(route)
   )
+  
+  const showContentSidebar = !shouldHideSidebar
 
   return (
     <div>
-      <div className="flex w-full space-x-  justify-between">
+      <div className="flex w-full justify-between">
         <div className="">
           <Fsidebar />
         </div>

@@ -1,19 +1,21 @@
 import { ArrowLeftIcon } from 'lucide-react'
-import type { User } from '@/types'
+import type { User, Conversation } from '@/types'
 import { useState, useEffect } from 'react'
 import api from '@/api/axiosInstance'
 import { Posts } from '../feed'
-import { useParams } from 'react-router'
+import { useParams, useNavigate } from 'react-router'
 import { useAuth } from '@/hooks/useAuth'
 import { Link } from 'react-router'
 
 export default function UserProfileComponent() {
   const { username } = useParams<{ username: string }>();
   const [profile, setProfile] = useState<User | null>(null)
+  const [participantId, setParticipantId] = useState()
   const [loadingProfile, setLoadingProfile] = useState(true)
   const { user } = useAuth()
   const [follow, setFollow] = useState(false)
   const [loadingFollow, setLoadingFollow] = useState(false)
+  const navigate = useNavigate()
 
   const fetchUserProfile = async () => {
     if (!username) {
@@ -77,8 +79,6 @@ export default function UserProfileComponent() {
   if (!profile) {
     return <div>User profile not found.</div>;
   }
-
-  //toggle follow
   const toggleFollow = async () => {
     if (loadingFollow) return;
 
@@ -108,6 +108,15 @@ export default function UserProfileComponent() {
     }
   }
 
+  const createConvoRoom = async () => {
+    try {
+      const response = await api.post(`/api/v1/chat/conversations`, { participantId: profile.id })
+      //take to the conversation room 
+      navigate(`/chat/${response.data.conversation.id}`)
+    } catch (error) {
+      console.error(error);
+    }
+  }
   return (
     <div className=''>
       {/* Profile Header */}
@@ -144,15 +153,15 @@ export default function UserProfileComponent() {
                     </button>
                   </div>
                   <div>
-                    //create a conversation room 
-                    <Link to={`/message/${profile.conversation.id}`}>
-                      <button className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl'>
-                        Message
-                      </button>
-                    </Link>
+                    {/* create a conversation room */}
+
+                    <button className='w-36 px-3 py-1 text-center hover:bg-gray-100 text-purple-400 font-bold cursor-pointer bg-gray-200 rounded-3xl' onClick={createConvoRoom}>
+                      Message
+                    </button>
+
                   </div>
                 </div>)
-              } 
+              }
             </div>
           </div>
           <div className='flex flex-col ml-5 mt-2'>

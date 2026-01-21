@@ -13,7 +13,6 @@ import { useAuth } from "@/hooks/useAuth"
 
 export default function Header() {
     const { handleGoogleLogin } = useAuth();
-
     return (
         <>
             <div className="flex justify-between px-10 py-2">

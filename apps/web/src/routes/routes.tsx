@@ -1,4 +1,6 @@
 import App from "@/App.tsx";
+import Chatwindow from "@/components/chat/Chatwindow";
+import EmptyChatState from "@/components/chat/EmptyChatState";
 import Layout from "@/pages/ Layout";
 import Feed from "@/pages/Feed"
 import Messages from "@/pages/Messages";
@@ -27,8 +29,19 @@ const routes = [
         element: <Timeline />
       },
       {
-        path: "messages",
-        element: <Messages />
+        path: "chat",
+        element: <Messages />,
+        children:[
+          {
+          index:true,
+          element:<EmptyChatState/>
+          },
+          {
+            path:":conversationId",
+            element:<Chatwindow/>
+          }
+        ]
+
       },
       {
         path: "notifications",
@@ -41,7 +54,8 @@ const routes = [
       {
         path:'/:username/:postId',
         element:<PostDetail/>
-      }
+      },
+      
     ]
   }
 ];

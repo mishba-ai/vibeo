@@ -22,7 +22,7 @@ const items = [
   },
   {
     title: "Messages",
-    url: "/messages",
+    url: "/chat",
     icon: Inbox,
     badge: 12
   },
