@@ -47,7 +47,7 @@ export class ChatWebSocketServer {
     private async handleConnection(ws: AuthenticatedWebSocket, req: any) {
         // Extract userId from query params or JWT token
         const { query } = parse(req.url || '', true);
-        const userId = query.userId as string; // In production, verify JWT token
+        const userId = query.userId as string; //  verify JWT token
         if (!userId) {
             ws.close(1008, 'Unauthorized');
             return;
@@ -154,12 +154,13 @@ export class ChatWebSocketServer {
             }
             //broadcast message to all particpants
             const messageData = {
-                type: 'new message',
+                type: 'new_message',
                 message: {
                     id: newMessage.id,
                     text: newMessage.text,
                     media: newMessage.media,
                     conversationId: newMessage.conversationId,
+                    senderId: senderId, 
                     sender: newMessage.sender,
                     createdAt: newMessage.createdAt,
                     isRead: newMessage.isRead,

@@ -1,8 +1,9 @@
 import { prisma } from "@/config";
+import { error } from "console";
 import { Request, Response } from 'express'
 
 
-//get conversation Messages
+//// Get messages in a conversation (with pagination)
 export const getMessages = async (req: Request, res: Response) => {
     try {
         const { conversationId } = req.params
@@ -56,7 +57,7 @@ export const getMessages = async (req: Request, res: Response) => {
     }
 }
 
-// get user conversation (HTTP endpoint) -list of all chats
+// get all user conversation (HTTP endpoint) -list of all chats
 export const getConversations = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.id;
@@ -156,7 +157,45 @@ export const createConversation = async (req: Request, res: Response) => {
         res.status(201).json({ conversation })
 
     } catch (error) {
-        console.error('error creating conversation',error);
-        res.status(500).json({error:'failed to create conversation'})
+        console.error('error creating conversation', error);
+        res.status(500).json({ error: 'failed to create conversation' })
+    }
+}
+
+//get specific conversation details
+export const getConversation = async (req: Request, res: Response) => {
+
+    try {
+        const { conversationId } = req.params;
+        const userId = req.user?.id
+        if (!userId) {
+            return res.status(401).json({ error: 'Unauthorized' });
+        }
+        const conversation = await prisma.conversation.findFirst({
+            where: {
+                id: conversationId,
+                participants: {
+                    some: { id: userId }
+                }
+            },
+            include: {
+                participants: {
+                    select: {
+                        id: true,
+                        username: true,
+                        avatar: true
+                    }
+                }
+            }
+        })
+        if (!conversation) {
+            return res.status(404).json({ error: 'conversation not found' })
+        }
+
+        res.status(200).json({ conversation })
+    } catch (error) {
+        console.error('error fetching conversation: ', error);
+            res.status(500).json({ error: 'Failed to fetch conversation' });
+
     }
 }

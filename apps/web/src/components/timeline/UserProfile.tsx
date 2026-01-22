@@ -112,7 +112,9 @@ export default function UserProfileComponent() {
     try {
       const response = await api.post(`/api/v1/chat/conversations`, { participantId: profile.id })
       //take to the conversation room 
-      navigate(`/chat/${response.data.conversation.id}`)
+      const conversationId = response.data.conversation.id
+      console.log('conversationId : ',conversationId);
+      navigate(`/chat/${conversationId}`)
     } catch (error) {
       console.error(error);
     }

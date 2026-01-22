@@ -85,7 +85,7 @@ export interface PingPayload {
   type: 'ping'
 }
 
-type WebSocketClientMessage = | sendMessagePayload | TypingPayload | ReadMessagePayload | PingPayload
+export type WebSocketClientMessage = | sendMessagePayload | TypingPayload | ReadMessagePayload | PingPayload
 
 // websocket events server ->client
 
