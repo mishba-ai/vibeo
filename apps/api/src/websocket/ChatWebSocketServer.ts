@@ -58,7 +58,7 @@ export class ChatWebSocketServer {
         ws.isAlive = true
         this.clients.set(userId, ws)
 
-        console.log(`User ${userId} connected. Total clients: ${this.clients.size}`);
+        // console.log(`User ${userId} connected. Total clients: ${this.clients.size}`);
 
         // send welcome message 
         ws.send(JSON.stringify({

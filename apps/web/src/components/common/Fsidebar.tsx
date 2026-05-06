@@ -83,7 +83,7 @@ export default function Fsidebar() {
                   {items.map((item) => (
                     <SidebarMenuItem 
                       key={item.title} 
-                      className={`${user ? "w-56" : "flex flex-col mt-4 px-"} relative`}
+                      className={`${user ? "" : "flex  flex-col mt-4 px-"} relative w-56`}
                     >
                       <SidebarMenuButton 
                         asChild 
@@ -103,8 +103,8 @@ export default function Fsidebar() {
                         <SidebarMenuBadge 
                           className={`${
                             currentPath === item.url 
-                              ? `font-semibold text-black bg-white rounded-full ${user ? "mt-2 mr-2" : ""}` 
-                              : `font-semibold bg-black text-white rounded-full ${user ? "mt-2 mr-2" : ""} peer-hover:bg-white peer-hover:text-black `
+                              ? `font-semibold text-black bg-white rounded-full ${user ? "mt-2 mr-2" : "mt-2 mr-2"}` 
+                              : `font-semibold bg-black text-white rounded-full ${user ? "mt-2 mr-2" : "mt-2 mr-2"} peer-hover:bg-white peer-hover:text-black `
                           } transition-colors duration-200`}
                         >
                           {item.badge}

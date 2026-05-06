@@ -1,3 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Lexend:wght@100..900&family=Space+Grotesk:wght@300..700&display=swap');
+
+
 @import "tailwindcss";
 @import "@repo/ui/globals.css";
 @source '../node_modules/@repo/ui';
+
+@theme {
+  --font-Anton: "Anton", sans-serif;
+  --font-SpaceGrotesk:"Space Grotesk",sans-serif;
+  --font-Lexend:"Lexend" ,sans-serif;
+  }
+
+body{
+    padding:0;
+    margin: 0;
+
+}
