@@ -1,6 +1,6 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { Server } from 'http';
-import { prisma } from '@/config';
+import { prisma } from '@/config/index.js';
 import { parse } from 'url';
 import { string } from 'zod';
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
-import { prisma } from '@/config/index'
-import { Prisma, PrismaClient } from 'generated/prisma'
+import { prisma } from '@/config/index.js'
+import { Prisma, PrismaClient } from '../../generated/prisma/index.js'
 
 //store active sse connections
 let sseClients: Response[] = []
@@ -111,7 +111,7 @@ export const postLikes = async (req: Request, res: Response) => {
             likesCount: updatedEntity.likesCount,
             userId: authenticatedUserId,
             isLiked: isLiked,
-            likedBy: updatedEntity.likes.map(like => like.userId)
+            likedBy: updatedEntity.likes.map((like:{userId:string}) => like.userId)
         })
 
         return res.status(200).json({
@@ -158,7 +158,7 @@ export const postViews = async (req: Request, res: Response) => {
         })
         //increase the view counter
         if (!existingView) {
-            updatedPost = await prisma.$transaction(async (tx) => {
+            updatedPost = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
                 await tx.view.create({
                     data: { userId: userId, postId: postId }
                 })
@@ -188,7 +188,7 @@ export const postViews = async (req: Request, res: Response) => {
                 viewsCount: updatedPost.viewsCount,
                 userId: userId,
                 isViewed: isViewed,
-                viewedBy: updatedPost.View.map(view => view.userId)
+                viewedBy: updatedPost.View.map((view:{userId:string}) => view.userId)
             })
         }
         // Return response to the client who triggered the like
@@ -220,7 +220,7 @@ export const postComments = async (req: Request, res: Response) => {
 
         if (!post) return res.status(404).json("post not found")
 
-        const newComment = await prisma.$transaction(async (tx) => {
+        const newComment = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
             const comment = await tx.comment.create({
                 data: {
                     content,
@@ -296,7 +296,7 @@ export const commentView = async (req: Request, res: Response) => {
 
         if (!existingView) {
             // Create new view and increment counter
-            updatedComment = await prisma.$transaction(async (tx) => {
+            updatedComment = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
                 await tx.view.create({
                     data: {
                         commentId: commentId,
@@ -326,7 +326,7 @@ export const commentView = async (req: Request, res: Response) => {
                 viewsCount: updatedComment.viewsCount,
                 userId,
                 isViewed,
-                viewedBy: updatedComment.View.map(v => v.userId)
+                viewedBy: updatedComment.View.map((v:{userId:string}) => v.userId)
             });
         }
 

@@ -1,7 +1,6 @@
 import { Request, Response } from 'express'
-import { prisma } from '@/config/index'
-import { Prisma } from 'generated/prisma';
-// import { Prisma } from '@prisma/client'; // Drop 'Follow' from here entirely
+import { prisma } from '@/config/index.js'
+import { Prisma } from '../../generated/prisma/index.js';
 
 export const checkFollowStatus = async (req: Request, res: Response) => {
     try {
@@ -218,7 +217,7 @@ export const getMyFollowers = async (req: Request, res: Response) => {
             }
         })
         // Transform the data to return a cleaner structure
-        const followersList = followers.map((follow) => ({
+        const followersList = followers.map((follow:(typeof followers)[number]) => ({
             followId: follow.id,
             followedAt: follow.createdAt,
             user: {
@@ -267,7 +266,7 @@ export const getMyFollowing = async (req: Request, res: Response) => {
         })
 
         //
-        const followingList = following.map(follow => ({
+        const followingList = following.map((follow:(typeof following)[number]) => ({
             avatar: follow.following.avatar,
             displayName: follow.following.displayName,
             id: follow.following.id,

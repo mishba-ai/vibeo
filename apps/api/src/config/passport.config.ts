@@ -1,8 +1,8 @@
 import passport, { use } from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
-import { prisma } from './index';
+import { prisma } from './index.js';
 import jwt from 'jsonwebtoken'
-import { Prisma } from 'generated/prisma';
+import { Prisma } from '../../generated/prisma/index.js';
 
 const jwtSecret = process.env.JWT_SECRET;
 
