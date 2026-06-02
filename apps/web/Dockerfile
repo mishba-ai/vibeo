@@ -16,10 +16,8 @@ RUN pnpm install --frozen-lockfile
 #  build
 FROM base AS builder
 WORKDIR /app
-
 COPY --from=installer /app/ .
 COPY --from=pruner /app/out/full/ .
-
 ARG VITE_API_URL
 ENV VITE_API_URL=$VITE_API_URL
 
@@ -35,6 +33,6 @@ RUN printf 'server {\n \
   root /usr/share/nginx/html; \n \
   try_files $uri $uri/ /index.html;\n \
   }\n' > /etc/nginx/conf.d/default.conf
-  
+
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
