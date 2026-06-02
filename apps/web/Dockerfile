@@ -29,13 +29,12 @@ RUN turbo run build --filter=web
 FROM nginx:alpine AS runner
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
-RUN printf 'server {\n
-  listen 80;\n
-  location / { \n
-  root /usr/share/nginx/html; \n
-  try_files $uri $uri/ /index.html;\n
-  }\n'\
-   > /etc/nginx/conf.d/default.conf
-
+RUN printf 'server {\n \
+  listen 80;\n \
+  location / { \n \
+  root /usr/share/nginx/html; \n \
+  try_files $uri $uri/ /index.html;\n \
+  }\n' > /etc/nginx/conf.d/default.conf
+  
 EXPOSE 80
 CMD ["nginx","-g","daemon off;"]
