@@ -218,7 +218,7 @@ export const getMyFollowers = async (req: Request, res: Response) => {
             }
         })
         // Transform the data to return a cleaner structure
-        const followersList = followers.map(follow => ({
+        const followersList = followers.map((follow) => ({
             followId: follow.id,
             followedAt: follow.createdAt,
             user: {
