@@ -10,10 +10,13 @@ FROM base AS installer
 WORKDIR /app
 COPY --from=pruner /app/out/json/ .
 COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/full/pnpm-workspace.yaml ./pnpm-workspace.yaml
 RUN pnpm install --frozen-lockfile
 
+#  build
 FROM base AS builder
 WORKDIR /app
+
 COPY --from=installer /app/ .
 COPY --from=pruner /app/out/full/ .
 
@@ -22,10 +25,11 @@ ENV VITE_API_URL=$VITE_API_URL
 
 RUN turbo run build --filter=web
 
+#serve
 FROM nginx:alpine AS runner
 COPY --from=builder /app/apps/web/dist /usr/share/nginx/html
 
-RUN echo 'server {\n
+RUN printf 'server {\n
   listen 80;\n
   location / { \n
   root /usr/share/nginx/html; \n
