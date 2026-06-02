@@ -158,7 +158,7 @@ export const postViews = async (req: Request, res: Response) => {
         })
         //increase the view counter
         if (!existingView) {
-            updatedPost = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
+            updatedPost = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.view.create({
                     data: { userId: userId, postId: postId }
                 })
@@ -220,7 +220,7 @@ export const postComments = async (req: Request, res: Response) => {
 
         if (!post) return res.status(404).json("post not found")
 
-        const newComment = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
+        const newComment = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
             const comment = await tx.comment.create({
                 data: {
                     content,
@@ -296,7 +296,7 @@ export const commentView = async (req: Request, res: Response) => {
 
         if (!existingView) {
             // Create new view and increment counter
-            updatedComment = await prisma.$transaction(async (tx:prisma.TransactionClient) => {
+            updatedComment = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.view.create({
                     data: {
                         commentId: commentId,

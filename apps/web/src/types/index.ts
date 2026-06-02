@@ -7,7 +7,7 @@ export interface User {
   posts: Post[];
   conversation: Conversation[]
 }
-
+ 
 export interface Post {
   id: string;
   content: string;

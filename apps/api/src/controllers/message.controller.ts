@@ -1,4 +1,4 @@
-import { prisma } from "@/config";
+import { prisma } from "@/config/index.js";
 import { error } from "console";
 import { Request, Response } from 'express'
 

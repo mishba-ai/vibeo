@@ -1,4 +1,4 @@
-import { followUser, unfollowUser, getMyFollowers, getMyFollowing, checkFollowStatus } from "@/controllers/follow.controller";
+import { followUser, unfollowUser, getMyFollowers, getMyFollowing, checkFollowStatus } from "@/controllers/follow.controller.js";
 import { Router } from "express";
 const followRouter: Router = Router()
 

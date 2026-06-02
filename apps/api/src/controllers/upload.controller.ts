@@ -1,11 +1,11 @@
-import { cloudinary } from "@/config";
+import { cloudinary } from "@/config/index.js";
 import { Request, Response, NextFunction } from "express";
-import { uploadToCloudinary, deleteFromCloudinary } from "@/config";
+import { uploadToCloudinary, deleteFromCloudinary } from "@/config/index.js";
 import {
     UploadResponse,
     MultipleUploadResponse,
     ErrorResponse,
-} from '@/@types/upload';
+} from '@/@types/upload.js';
 import { RequestHandler } from 'express';
 
 

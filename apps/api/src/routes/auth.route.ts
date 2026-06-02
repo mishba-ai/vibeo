@@ -1,5 +1,5 @@
-import { prisma } from "@/config";
-import { protect } from "@/middlewares/auth.middleware";
+import { prisma } from "@/config/index.js";
+import { protect } from "@/middlewares/auth.middleware.js";
 import { response, Router } from "express";
 import type { Router as ExpressRouter } from 'express'
 import passport from "passport";

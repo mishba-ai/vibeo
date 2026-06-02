@@ -1,10 +1,10 @@
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import { prisma, passport } from './config/index'
-import { router, authRouter, uploadRouter } from './routes/index'
+import { prisma, passport } from './config/index.js'
+import { router, authRouter, uploadRouter } from './routes/index.js'
 import { createServer } from 'http'
-import { ChatWebSocketServer } from './websocket/ChatWebSocketServer';
+import { ChatWebSocketServer } from './websocket/ChatWebSocketServer.js';
 
 const app = express()
 const PORT = process.env.PORT || '3001'

@@ -1,8 +1,8 @@
 import { Router } from "express";
 const postRouter: Router = Router()
-import { createPost, getFollowingFeeds, getPosts, getUserProfile, singlePost } from "@/controllers/post.controller";
-import { commentLike, commentView, getComments, postComments, postLikes, postViews, subscribeToPostUpdates } from "@/controllers/postRealtime.controller";
-import { protect } from "@/middlewares/auth.middleware";
+import { createPost, getFollowingFeeds, getPosts, getUserProfile, singlePost } from "@/controllers/post.controller.js";
+import { commentLike, commentView, getComments, postComments, postLikes, postViews, subscribeToPostUpdates } from "@/controllers/postRealtime.controller.js";
+import { protect } from "@/middlewares/auth.middleware.js";
 
 postRouter.get('/posts', getPosts)
 postRouter.post('/posts',protect, createPost)

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express'
-import { prisma } from '@/config/index'
+import { prisma } from '@/config/index.js'
 
 const createPost = async (req: Request, res: Response) => {
     try {

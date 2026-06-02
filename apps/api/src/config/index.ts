@@ -1,6 +1,6 @@
-import { prisma } from "./prisma.config";
-import { passport } from "./passport.config";
-import { cloudinary, uploadToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl, cloudinaryResult } from "./cloudinary.config";
+import { prisma } from "./prisma.config.js";
+import { passport } from "./passport.config.js";
+import { cloudinary, uploadToCloudinary, deleteFromCloudinary, extractPublicIdFromUrl, cloudinaryResult } from "./cloudinary.config.js";
 
 export {
   prisma,

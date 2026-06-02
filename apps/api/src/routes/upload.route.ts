@@ -1,7 +1,7 @@
 import { Router } from "express";
 const uploadRouter: Router = Router()
-import { uploadMultipleFiles, uploadSingleFile, deleteFile } from "@/controllers/upload.controller";
-import { uploadSingle, uploadMultiple } from '@/middlewares/multer.middleware'
+import { uploadMultipleFiles, uploadSingleFile, deleteFile } from "@/controllers/upload.controller.js";
+import { uploadSingle, uploadMultiple } from '@/middlewares/multer.middleware.js'
 
 /*
   UPLOAD ROUTES
