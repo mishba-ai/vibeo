@@ -18,7 +18,7 @@ RUN pnpm install --frozen-lockfile
 # Build
 FROM base AS builder
 WORKDIR /app
-COPY --from=pruner /app/ .
+COPY --from=installer /app/ .
 COPY --from=pruner /app/out/full/ .
 RUN turbo run build --filter=api
 
@@ -26,11 +26,10 @@ RUN turbo run build --filter=api
 FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-RUN npm install -g pnpm
 
 COPY --from=builder /app/apps/api/dist ./dist
 COPY --from=builder /app/apps/api/package.json ./package.json
-RUN pnpm install --prod --frozen-lockfile
+COPY --from=builder /app/node_modules ./node_modules
 
 EXPOSE 3001
 CMD ["node", "dist/index.js"]
