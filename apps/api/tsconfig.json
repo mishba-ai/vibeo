@@ -1,7 +1,6 @@
 {
   "extends": "../../packages/typescript-config/node.json",
   "compilerOptions": {
-    "ignoreDeprecations": "6.0",
     "esModuleInterop": true,
     "typeRoots": [
       "./src/@types",
