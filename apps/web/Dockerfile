@@ -1,5 +1,5 @@
 FROM node:20-alpine AS base
-RUN pnpm install -g turbo
+RUN npm install -g pnpm turbo
 
 FROM base AS pruner
 WORKDIR /app
@@ -9,8 +9,8 @@ RUN turbo prune web --docker
 FROM base AS installer
 WORKDIR /app
 COPY --from=pruner /app/out/json/ .
-COPY --from=pruner /app/out/package-lock.json ./package-lock.json
-RUN pnpm install
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
 WORKDIR /app
