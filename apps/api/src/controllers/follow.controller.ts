@@ -1,5 +1,7 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
+import { Prisma } from 'generated/prisma';
+// import { Prisma } from '@prisma/client'; // Drop 'Follow' from here entirely
 
 export const checkFollowStatus = async (req: Request, res: Response) => {
     try {
@@ -80,7 +82,7 @@ export const followUser = async (req: Request, res: Response) => {
             return res.status(409).json({ message: 'you are already following this user' })
         }
         // Create the follow relationship and update counts in a transaction
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
  
             //create follow record
             const follow = await tx.follow.create({
@@ -155,7 +157,7 @@ export const unfollowUser = async (req: Request, res: Response) => {
         }
 
         // delete the follow relationship and update counts in a transaction
-        const result = await prisma.$transaction(async (tx) => {
+        const result = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
 
             //create follow record
             const unfollow = await tx.follow.delete({

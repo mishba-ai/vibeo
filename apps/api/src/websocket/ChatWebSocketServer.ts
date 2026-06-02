@@ -2,6 +2,7 @@ import { WebSocketServer, WebSocket } from 'ws';
 import { Server } from 'http';
 import { prisma } from '@/config';
 import { parse } from 'url';
+import { string } from 'zod';
 
 interface AuthenticatedWebSocket extends WebSocket {
     userId?: string;
@@ -166,7 +167,7 @@ export class ChatWebSocketServer {
                     isRead: newMessage.isRead,
                 }
             };
-            conversation.participants.forEach(participant => {
+            conversation.participants.forEach((participant: { id: string }) => {
                 const client = this.clients.get(participant.id);
                 if (client && client.readyState === WebSocket.OPEN) {
                     client.send(JSON.stringify(messageData));
@@ -205,7 +206,7 @@ export class ChatWebSocketServer {
                 conversationId,
                 userId: senderId
             }
-            conversation.participants.forEach(participant => {
+            conversation.participants.forEach((participant: { id: string } ) => {
                 if (participant.id !== senderId) {
                     const client = this.clients.get(participant.id);
                     if (client && client.readyState === WebSocket.OPEN) {

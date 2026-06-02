@@ -64,7 +64,7 @@ const startServer = async () => {
     console.error("Failed to start server:", error);
     await prisma
       .$disconnect()
-      .catch((e) =>
+      .catch((e:Error) =>
         console.error("Error during Prisma disconnect on startup failure:", e)
       );
 

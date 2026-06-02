@@ -1,6 +1,6 @@
 import { Request, Response } from 'express'
 import { prisma } from '@/config/index'
-import { es, id } from 'zod/v4/locales'
+import { Prisma, PrismaClient } from 'generated/prisma'
 
 //store active sse connections
 let sseClients: Response[] = []
@@ -73,7 +73,7 @@ export const postLikes = async (req: Request, res: Response) => {
 
         if (existingLike) {
             // Unlike
-            updatedEntity = await prisma.$transaction(async (tx) => {
+            updatedEntity = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.like.delete({ where: { id: existingLike.id } })
 
 
@@ -88,7 +88,7 @@ export const postLikes = async (req: Request, res: Response) => {
             isLiked = false
         } else {
             // Like
-            updatedEntity = await prisma.$transaction(async (tx) => {
+            updatedEntity = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.like.create({
                     data: { userId: authenticatedUserId, postId: postId }
                 });
@@ -372,7 +372,7 @@ export const commentLike = async (req: Request, res: Response) => {
 
         if (existingLike) {
             // Unlike - delete like and decrement counter
-            updatedComment = await prisma.$transaction(async (tx) => {
+            updatedComment = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.like.delete({
                     where: { id: existingLike.id }
                 });
@@ -386,7 +386,7 @@ export const commentLike = async (req: Request, res: Response) => {
             isLiked = false;
         } else {
             // Like - create like and increment counter
-            updatedComment = await prisma.$transaction(async (tx) => {
+            updatedComment = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
                 await tx.like.create({
                     data: {
                         commentId: commentId,
@@ -410,7 +410,7 @@ export const commentLike = async (req: Request, res: Response) => {
             likesCount: updatedComment.likesCount,
             userId,
             isLiked,
-            likedBy: updatedComment.likes.map(l => l.userId)
+            likedBy: updatedComment.likes.map((l:{userId:string}) => l.userId)
         });
 
         res.json({
@@ -467,7 +467,7 @@ export const getComments = async (req: Request, res: Response) => {
 
             }
         })
-        const commentsWithCounts = comments.map(comment => ({
+        const commentsWithCounts = comments.map((comment:typeof comments[number]) => ({
             ...comment,
             likesCount: comment.likes.length,
             viewsCount: comment.View.length,

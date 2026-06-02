@@ -2,6 +2,7 @@ import passport, { use } from 'passport';
 import { Strategy as GoogleStrategy } from 'passport-google-oauth20'
 import { prisma } from './index';
 import jwt from 'jsonwebtoken'
+import { Prisma } from 'generated/prisma';
 
 const jwtSecret = process.env.JWT_SECRET;
 
@@ -13,7 +14,7 @@ passport.use(new GoogleStrategy({
 },
   async (_accessToken, _refreshToken, profile, cb) => {
     try {
-      const user = await prisma.$transaction(async (tx) => {
+      const user = await prisma.$transaction(async (tx:Prisma.TransactionClient) => {
         let existingUser = await tx.user.findUnique({
           where: { googleId: profile.id }
         });
