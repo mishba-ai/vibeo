@@ -4,7 +4,7 @@ services:
       context: .              
       dockerfile: ./apps/api/Dockerfile
     restart: unless-stopped
-    env-file:
+    env_file:
      - ./apps/api/.env
     networks:
       - app-network
