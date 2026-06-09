@@ -1,13 +1,11 @@
 FROM node:20-alpine AS base
 RUN npm install -g pnpm turbo
 
-# Prune the monorepo to only what api needs
 FROM base AS pruner
 WORKDIR /app
 COPY . .
 RUN turbo prune api --docker
 
-# Install dependencies
 FROM base AS installer
 WORKDIR /app
 COPY --from=pruner /app/out/json/ .
@@ -15,25 +13,27 @@ COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
 COPY --from=pruner /app/out/full/pnpm-workspace.yaml ./pnpm-workspace.yaml
 RUN pnpm install --frozen-lockfile
 
-# Build
 FROM base AS builder
 WORKDIR /app
 COPY --from=installer /app/ .
 COPY --from=pruner /app/out/full/ .
 RUN turbo run build --filter=api
 
-# Final slim image
 FROM node:20-alpine AS runner
+RUN npm install -g pnpm
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY --from=builder /app/apps/api/dist ./dist
-COPY --from=builder /app/apps/api/package.json ./package.json
+COPY --from=pruner /app/out/json/ .
+COPY --from=pruner /app/out/pnpm-lock.yaml ./pnpm-lock.yaml
+COPY --from=pruner /app/out/full/pnpm-workspace.yaml ./pnpm-workspace.yaml
 
-COPY --from=builder /app/apps/api/prisma ./prisma        
-COPY --from=builder /app/node_modules ./node_modules
-COPY --from=builder /app/apps/api/node_modules ./apps/api/node_modules
+RUN pnpm install --frozen-lockfile --prod
 
+# Copy built output and prisma
+COPY --from=builder /app/apps/api/dist ./apps/api/dist
+COPY --from=builder /app/apps/api/prisma ./apps/api/prisma
 
+WORKDIR /app/apps/api
 EXPOSE 3000
 CMD ["node", "dist/server.js"]
